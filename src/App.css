@@ -1,230 +1,111 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Google Fonts for MACS Branding */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-:root {
-  --radius: 0.75rem;
-  
-  /* MACS Multichain Color Palette */
-  --macs-terracotta: #D97706;
-  --macs-deep-teal: #0F766E;
-  --macs-deep-red: #DC2626;
-  --macs-cream: #FEF3C7;
-  --macs-navy: #1E3A8A;
-  --macs-orange: #F59E0B;
-  --macs-turquoise: #06B6D4;
-  --macs-purple: #7C3AED;
-  
-  /* Polygon Colors */
-  --polygon-purple: #8247E5;
-  --polygon-light: #A855F7;
-  
-  /* Solana Colors */
-  --solana-green: #00D4AA;
-  --solana-purple: #9945FF;
-  --solana-dark: #14F195;
-  
-  /* Base Theme */
-  --background: #FEFEFE;
-  --foreground: #1A1A1A;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  --primary: var(--macs-terracotta);
-  --primary-foreground: #FFFFFF;
-  --secondary: var(--macs-cream);
-  --secondary-foreground: var(--macs-navy);
-  --muted: #F8F9FA;
-  --muted-foreground: #6B7280;
-  --accent: var(--macs-deep-teal);
-  --accent-foreground: #FFFFFF;
-  --destructive: var(--macs-deep-red);
-  --border: #E5E7EB;
-  --input: #F3F4F6;
-  --ring: var(--macs-terracotta);
-  --chart-1: var(--macs-terracotta);
-  --chart-2: var(--macs-deep-teal);
-  --chart-3: var(--macs-orange);
-  --chart-4: var(--macs-turquoise);
-  --chart-5: var(--macs-purple);
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: var(--macs-terracotta);
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--macs-cream);
-  --sidebar-accent-foreground: var(--macs-navy);
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: var(--macs-terracotta);
-}
-
-.dark {
-  --background: #0F0F0F;
-  --foreground: #FAFAFA;
-  --card: #1A1A1A;
-  --card-foreground: #FAFAFA;
-  --popover: #1A1A1A;
-  --popover-foreground: #FAFAFA;
-  --primary: var(--macs-orange);
-  --primary-foreground: #0F0F0F;
-  --secondary: #2A2A2A;
-  --secondary-foreground: #FAFAFA;
-  --muted: #2A2A2A;
-  --muted-foreground: #A1A1AA;
-  --accent: var(--macs-turquoise);
-  --accent-foreground: #0F0F0F;
-  --destructive: #EF4444;
-  --border: #2A2A2A;
-  --input: #2A2A2A;
-  --ring: var(--macs-orange);
-  --chart-1: var(--macs-orange);
-  --chart-2: var(--macs-turquoise);
-  --chart-3: var(--macs-terracotta);
-  --chart-4: var(--macs-purple);
-  --chart-5: var(--macs-deep-teal);
-  --sidebar: #1A1A1A;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: var(--macs-orange);
-  --sidebar-primary-foreground: #0F0F0F;
-  --sidebar-accent: #2A2A2A;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #2A2A2A;
-  --sidebar-ring: var(--macs-orange);
-}
-
+/* Theme Variables & Custom Utilities */
 @layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* MACS Multichain Color Palette */
+    --macs-terracotta: #D97706;
+    --macs-deep-teal: #0F766E;
+    --macs-deep-red: #DC2626;
+    --macs-cream: #FEF3C7;
+    --macs-navy: #1E3A8A;
+    --macs-orange: #F59E0B;
+    --macs-turquoise: #06B6D4;
+    --macs-purple: #7C3AED;
+
+    --polygon-purple: #8247E5;
+    --polygon-light: #A855F7;
+
+    --solana-green: #00D4AA;
+    --solana-purple: #9945FF;
+    --solana-dark: #14F195;
+
+    --background: #FEFEFE;
+    --foreground: #1A1A1A;
+    --card: #FFFFFF;
+    --card-foreground: #1A1A1A;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1A1A;
+    --primary: var(--macs-terracotta);
+    --primary-foreground: #FFFFFF;
+    --secondary: var(--macs-cream);
+    --secondary-foreground: var(--macs-navy);
+    --muted: #F8F9FA;
+    --muted-foreground: #6B7280;
+    --accent: var(--macs-deep-teal);
+    --accent-foreground: #FFFFFF;
+    --destructive: var(--macs-deep-red);
+    --border: #E5E7EB;
+    --input: #F3F4F6;
+    --ring: var(--macs-terracotta);
+    --chart-1: var(--macs-terracotta);
+    --chart-2: var(--macs-deep-teal);
+    --chart-3: var(--macs-orange);
+    --chart-4: var(--macs-turquoise);
+    --chart-5: var(--macs-purple);
+    --sidebar: #FAFAFA;
+    --sidebar-foreground: #1A1A1A;
+    --sidebar-primary: var(--macs-terracotta);
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: var(--macs-cream);
+    --sidebar-accent-foreground: var(--macs-navy);
+    --sidebar-border: #E5E7EB;
+    --sidebar-ring: var(--macs-terracotta);
+  }
+
+  .dark {
+    --background: #0F0F0F;
+    --foreground: #FAFAFA;
+    --card: #1A1A1A;
+    --card-foreground: #FAFAFA;
+    --popover: #1A1A1A;
+    --popover-foreground: #FAFAFA;
+    --primary: var(--macs-orange);
+    --primary-foreground: #0F0F0F;
+    --secondary: #2A2A2A;
+    --secondary-foreground: #FAFAFA;
+    --muted: #2A2A2A;
+    --muted-foreground: #A1A1AA;
+    --accent: var(--macs-turquoise);
+    --accent-foreground: #0F0F0F;
+    --destructive: #EF4444;
+    --border: #2A2A2A;
+    --input: #2A2A2A;
+    --ring: var(--macs-orange);
+    --chart-1: var(--macs-orange);
+    --chart-2: var(--macs-turquoise);
+    --chart-3: var(--macs-terracotta);
+    --chart-4: var(--macs-purple);
+    --chart-5: var(--macs-deep-teal);
+    --sidebar: #1A1A1A;
+    --sidebar-foreground: #FAFAFA;
+    --sidebar-primary: var(--macs-orange);
+    --sidebar-primary-foreground: #0F0F0F;
+    --sidebar-accent: #2A2A2A;
+    --sidebar-accent-foreground: #FAFAFA;
+    --sidebar-border: #2A2A2A;
+    --sidebar-ring: var(--macs-orange);
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Open Sans', sans-serif;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
   }
-}
-
-/* MACS Multichain Wallet Specific Styles */
-.macs-gradient {
-  background: linear-gradient(135deg, var(--macs-terracotta) 0%, var(--macs-deep-teal) 100%);
-}
-
-.polygon-gradient {
-  background: linear-gradient(135deg, var(--polygon-purple) 0%, var(--polygon-light) 100%);
-}
-
-.solana-gradient {
-  background: linear-gradient(135deg, var(--solana-purple) 0%, var(--solana-green) 100%);
-}
-
-.chain-card {
-  @apply relative overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-border hover:bg-card/80 hover:shadow-lg;
-}
-
-.chain-card::before {
-  content: '';
-  @apply absolute inset-0 opacity-5;
-  background: linear-gradient(45deg, transparent 30%, currentColor 50%, transparent 70%);
-}
-
-.wallet-balance {
-  @apply text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
-}
-
-.transaction-item {
-  @apply flex items-center justify-between p-4 rounded-lg border border-border/50 bg-card/30 backdrop-blur-sm transition-all duration-200 hover:bg-card/60 hover:border-border;
-}
-
-.bridge-flow {
-  @apply relative flex items-center justify-center space-x-4;
-}
-
-.bridge-arrow {
-  @apply text-muted-foreground transition-colors duration-300 hover:text-primary;
-}
-
-.network-status {
-  @apply inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium;
-}
-
-.network-status.connected {
-  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
-}
-
-.network-status.disconnected {
-  @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
-}
-
-.network-status.connecting {
-  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
-}
-
-.multichain-stats {
-  @apply grid grid-cols-1 md:grid-cols-3 gap-6;
-}
-
-.stat-card {
-  @apply p-6 rounded-xl bg-gradient-to-br from-card to-card/50 border border-border/50 backdrop-blur-sm;
-}
-
-.chain-selector {
-  @apply flex space-x-2 p-1 bg-muted rounded-lg;
-}
-
-.chain-tab {
-  @apply flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
-}
-
-.chain-tab.active {
-  @apply bg-background text-foreground shadow-sm;
-}
-
-.chain-tab.inactive {
-  @apply text-muted-foreground hover:text-foreground hover:bg-background/50;
 }
