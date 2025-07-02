@@ -96,7 +96,7 @@
   }
 
   * {
-    @apply border border-border ring ring-ring/50;
+    @apply border border-border ring ring-primary/50;
   }
 
   body {
