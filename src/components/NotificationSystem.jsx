@@ -14,7 +14,6 @@ import {
   Zap,
   Clock,
   ExternalLink,
-  MarkAsUnread,
   Trash2,
   Settings
 } from 'lucide-react';
@@ -260,7 +259,7 @@ const NotificationDropdown = ({ onClose }) => {
           <div className="flex items-center gap-2">
             {notifications.length > 0 && (
               <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                <MarkAsUnread className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4" />
               </Button>
             )}
             <Button variant="ghost" size="sm" onClick={onClose}>
