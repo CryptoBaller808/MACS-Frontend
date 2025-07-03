@@ -251,7 +251,7 @@ const EnhancedSearch = ({ onResults, onClose }) => {
                   onKeyPress={(e) => e.key === 'Enter' && performSearch()}
                   placeholder={
                     searchMode === 'semantic'
-                      ? 'Describe what you're looking for in natural language...'
+                      ? 'Describe what you\'re looking for in natural language...'
                       : 'Search for artwork, creators, or collections...'
                   }
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg"
