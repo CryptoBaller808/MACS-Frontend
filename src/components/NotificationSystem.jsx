@@ -418,5 +418,9 @@ export const NotificationDemo = () => {
   );
 };
 
+const NotificationSystem = () => {
+  return null;
+};
+
 export default NotificationSystem;
 
