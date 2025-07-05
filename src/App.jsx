@@ -537,24 +537,151 @@ function AppContent() {
   // Marketplace page content
   const renderMarketplacePage = () => (
     <div className="space-y-6">
+      {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-4">Marketplace</h1>
         <p className="text-gray-600">Discover and collect unique digital artworks</p>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Marketplace items would go here */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-            <h3 className="font-semibold mb-2">Artwork Title</h3>
-            <p className="text-sm text-gray-600 mb-2">by Artist Name</p>
-            <div className="flex items-center justify-between">
-              <span className="font-bold">250 MACS</span>
-              <Button size="sm">Buy Now</Button>
+
+      {/* Filters and Search */}
+      <div className="flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm">All Categories</Button>
+          <Button variant="outline" size="sm">Digital Art</Button>
+          <Button variant="outline" size="sm">Photography</Button>
+          <Button variant="outline" size="sm">3D Art</Button>
+          <Button variant="outline" size="sm">Music</Button>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">Price: Low to High</Button>
+          <Button variant="outline" size="sm">Recently Listed</Button>
+        </div>
+      </div>
+
+      {/* Trending Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Trending Now
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">2,847</div>
+              <div className="text-sm text-gray-600">Total Volume (24h)</div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">156</div>
+              <div className="text-sm text-gray-600">New Listings</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">89%</div>
+              <div className="text-sm text-gray-600">Sales Rate</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Featured Artworks */}
+      <div>
+        <h2 className="text-xl font-bold mb-4">Featured Artworks</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[
+            {
+              id: 1,
+              title: "Digital Dreams #001",
+              artist: "CryptoArtist",
+              price: "250 MACS",
+              image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400",
+              likes: 45,
+              verified: true
+            },
+            {
+              id: 2,
+              title: "Neon Cityscape",
+              artist: "UrbanVisions",
+              price: "180 MACS",
+              image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400",
+              likes: 32,
+              verified: false
+            },
+            {
+              id: 3,
+              title: "Abstract Emotions",
+              artist: "ModernMuse",
+              price: "320 MACS",
+              image: "https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=400",
+              likes: 67,
+              verified: true
+            },
+            {
+              id: 4,
+              title: "Digital Portrait",
+              artist: "PixelMaster",
+              price: "420 MACS",
+              image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
+              likes: 89,
+              verified: true
+            },
+            {
+              id: 5,
+              title: "Cyber Landscape",
+              artist: "FutureArt",
+              price: "275 MACS",
+              image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400",
+              likes: 54,
+              verified: false
+            },
+            {
+              id: 6,
+              title: "Geometric Harmony",
+              artist: "MathArtist",
+              price: "195 MACS",
+              image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400",
+              likes: 38,
+              verified: true
+            }
+          ].map((artwork) => (
+            <Card key={artwork.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="relative">
+                <img 
+                  src={artwork.image} 
+                  alt={artwork.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute top-2 right-2 bg-white rounded-full p-1">
+                  <Heart className="h-4 w-4 text-gray-600" />
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-1">{artwork.title}</h3>
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-sm text-gray-600">by {artwork.artist}</span>
+                  {artwork.verified && (
+                    <CheckCircle className="h-3 w-3 text-blue-500" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-orange-600">{artwork.price}</span>
+                  <div className="flex items-center gap-1">
+                    <Heart className="h-3 w-3 text-red-500" />
+                    <span className="text-xs text-gray-600">{artwork.likes}</span>
+                  </div>
+                </div>
+                <Button className="w-full mt-3" size="sm">
+                  Buy Now
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Load More */}
+      <div className="text-center">
+        <Button variant="outline">Load More Artworks</Button>
       </div>
     </div>
   )
@@ -562,21 +689,93 @@ function AppContent() {
   // Discover page content
   const renderDiscoverPage = () => (
     <div className="space-y-6">
+      {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-4">Discover</h1>
         <p className="text-gray-600">Find new artists and trending content</p>
       </div>
+
+      {/* Statistics Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-orange-600">12,847</div>
+            <div className="text-sm text-gray-600">Active Creators</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">89,234</div>
+            <div className="text-sm text-gray-600">Total Artworks</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">5,672</div>
+            <div className="text-sm text-gray-600">Collections</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-purple-600">2,847</div>
+            <div className="text-sm text-gray-600">Daily Volume</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm">All Categories</Button>
+        <Button variant="outline" size="sm">Digital Art</Button>
+        <Button variant="outline" size="sm">Photography</Button>
+        <Button variant="outline" size="sm">3D Art</Button>
+        <Button variant="outline" size="sm">Music</Button>
+        <Button variant="outline" size="sm">Gaming</Button>
+      </div>
       
       <Tabs defaultValue="creators" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="creators">Creators</TabsTrigger>
+          <TabsTrigger value="creators">Top Creators</TabsTrigger>
           <TabsTrigger value="trending">Trending</TabsTrigger>
           <TabsTrigger value="collections">Collections</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="creators" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {suggestedArtists.map((artist) => (
-              <Card key={artist.id}>
+            {[
+              ...suggestedArtists,
+              {
+                id: 4,
+                name: 'Elena Rodriguez',
+                specialty: 'Digital Photographer',
+                followers: '18.3K followers',
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
+                artworks: 89,
+                sales: '1.2K MACS'
+              },
+              {
+                id: 5,
+                name: 'Marcus Chen',
+                specialty: '3D Artist',
+                followers: '22.1K followers',
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+                artworks: 156,
+                sales: '3.4K MACS'
+              },
+              {
+                id: 6,
+                name: 'Sofia Andersson',
+                specialty: 'Concept Artist',
+                followers: '14.7K followers',
+                verified: false,
+                avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
+                artworks: 67,
+                sales: '890 MACS'
+              }
+            ].map((artist) => (
+              <Card key={artist.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6 text-center">
                   <Avatar className="h-20 w-20 mx-auto mb-4">
                     <AvatarImage src={artist.avatar} />
@@ -588,19 +787,126 @@ function AppContent() {
                       <CheckCircle className="h-4 w-4 text-blue-500" />
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{artist.specialty}</p>
-                  <p className="text-sm text-gray-500 mb-4">{artist.followers}</p>
+                  <p className="text-sm text-gray-600 mb-1">{artist.specialty}</p>
+                  <p className="text-sm text-gray-500 mb-2">{artist.followers}</p>
+                  {artist.artworks && (
+                    <div className="flex justify-center gap-4 text-xs text-gray-600 mb-4">
+                      <span>{artist.artworks} artworks</span>
+                      <span>{artist.sales} earned</span>
+                    </div>
+                  )}
                   <Button className="w-full">Follow</Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         </TabsContent>
-        <TabsContent value="trending">
-          <p>Trending content will be displayed here</p>
+        
+        <TabsContent value="trending" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                id: 1,
+                title: '#DigitalArt',
+                posts: '2.1K posts',
+                growth: '+12%',
+                color: 'bg-blue-500'
+              },
+              {
+                id: 2,
+                title: '#Heritage',
+                posts: '1.8K posts',
+                growth: '+8%',
+                color: 'bg-green-500'
+              },
+              {
+                id: 3,
+                title: '#Collaboration',
+                posts: '1.5K posts',
+                growth: '+15%',
+                color: 'bg-purple-500'
+              },
+              {
+                id: 4,
+                title: '#Traditional',
+                posts: '1.2K posts',
+                growth: '+5%',
+                color: 'bg-orange-500'
+              },
+              {
+                id: 5,
+                title: '#Contemporary',
+                posts: '980 posts',
+                growth: '+22%',
+                color: 'bg-pink-500'
+              },
+              {
+                id: 6,
+                title: '#Photography',
+                posts: '856 posts',
+                growth: '+18%',
+                color: 'bg-teal-500'
+              }
+            ].map((trend) => (
+              <Card key={trend.id} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className={`w-12 h-12 ${trend.color} rounded-lg mb-4 flex items-center justify-center`}>
+                    <span className="text-white font-bold">#</span>
+                  </div>
+                  <h3 className="font-semibold mb-2">{trend.title}</h3>
+                  <p className="text-sm text-gray-600 mb-1">{trend.posts}</p>
+                  <p className="text-sm text-green-600 font-medium">{trend.growth}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
-        <TabsContent value="collections">
-          <p>Collections will be displayed here</p>
+        
+        <TabsContent value="collections" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                id: 1,
+                title: 'Digital Dreamscapes',
+                creator: 'CryptoArtist',
+                items: 24,
+                floorPrice: '150 MACS',
+                image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400'
+              },
+              {
+                id: 2,
+                title: 'Urban Visions',
+                creator: 'CityArt',
+                items: 18,
+                floorPrice: '200 MACS',
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400'
+              },
+              {
+                id: 3,
+                title: 'Abstract Emotions',
+                creator: 'ModernMuse',
+                items: 32,
+                floorPrice: '120 MACS',
+                image: 'https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=400'
+              }
+            ].map((collection) => (
+              <Card key={collection.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <img 
+                  src={collection.image} 
+                  alt={collection.title}
+                  className="w-full h-48 object-cover"
+                />
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-1">{collection.title}</h3>
+                  <p className="text-sm text-gray-600 mb-2">by {collection.creator}</p>
+                  <div className="flex justify-between text-sm">
+                    <span>{collection.items} items</span>
+                    <span className="font-medium">Floor: {collection.floorPrice}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -613,25 +919,86 @@ function AppContent() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start gap-6">
-            <Avatar className="h-24 w-24">
+            <Avatar className="h-32 w-32">
               <AvatarImage src={userData.avatar} />
               <AvatarFallback>{userData.username.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-2xl font-bold">{userData.username}</h1>
+                <h1 className="text-3xl font-bold">{userData.username}</h1>
                 {userData.verified && (
                   <CheckCircle className="h-6 w-6 text-blue-500" />
                 )}
               </div>
               <p className="text-gray-600 mb-4">{userData.bio}</p>
-              <div className="flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-6 text-sm mb-4">
                 <span><strong>{userData.followers.toLocaleString()}</strong> followers</span>
                 <span><strong>{userData.following.toLocaleString()}</strong> following</span>
                 <span><strong>{userData.artworks}</strong> artworks</span>
+                <span><strong>{userData.collections}</strong> collections</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {userData.specialties.map((specialty, index) => (
+                  <Badge key={index} variant="secondary">{specialty}</Badge>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Globe className="h-4 w-4" />
+                <span>{userData.location}</span>
+                <ExternalLink className="h-4 w-4 ml-2" />
+                <a href={userData.website} className="text-blue-600 hover:underline">
+                  {userData.website}
+                </a>
               </div>
             </div>
-            <Button>Edit Profile</Button>
+            <div className="flex flex-col gap-2">
+              <Button>Edit Profile</Button>
+              <Button variant="outline">Share Profile</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-orange-600">{userData.totalSales.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Total Sales (MACS)</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{userData.artworks}</div>
+            <div className="text-sm text-gray-600">Artworks Created</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{userData.collections}</div>
+            <div className="text-sm text-gray-600">Collections</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-purple-600">{userData.followers.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Followers</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Achievements */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Achievements</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {userData.achievements.map((achievement, index) => (
+              <Badge key={index} className="bg-yellow-100 text-yellow-800">
+                🏆 {achievement}
+              </Badge>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -639,27 +1006,217 @@ function AppContent() {
       {/* Profile Content */}
       <Tabs defaultValue="artworks" className="w-full">
         <TabsList>
-          <TabsTrigger value="artworks">Artworks</TabsTrigger>
-          <TabsTrigger value="collections">Collections</TabsTrigger>
+          <TabsTrigger value="artworks">Artworks ({userData.artworks})</TabsTrigger>
+          <TabsTrigger value="collections">Collections ({userData.collections})</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="about">About</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="artworks">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* User's artworks would be displayed here */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                <h3 className="font-semibold mb-2">My Artwork</h3>
-                <p className="text-sm text-gray-600">Created 2 days ago</p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[
+              {
+                id: 1,
+                title: "Hawaiian Sunset Dreams",
+                price: "450 MACS",
+                image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400",
+                likes: 89,
+                created: "2 days ago"
+              },
+              {
+                id: 2,
+                title: "Digital Aloha",
+                price: "320 MACS",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400",
+                likes: 67,
+                created: "1 week ago"
+              },
+              {
+                id: 3,
+                title: "Island Vibes",
+                price: "280 MACS",
+                image: "https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=400",
+                likes: 45,
+                created: "2 weeks ago"
+              },
+              {
+                id: 4,
+                title: "Ocean Depths",
+                price: "380 MACS",
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
+                likes: 92,
+                created: "3 weeks ago"
+              },
+              {
+                id: 5,
+                title: "Tropical Paradise",
+                price: "520 MACS",
+                image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400",
+                likes: 134,
+                created: "1 month ago"
+              },
+              {
+                id: 6,
+                title: "Cultural Heritage",
+                price: "650 MACS",
+                image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400",
+                likes: 156,
+                created: "1 month ago"
+              }
+            ].map((artwork) => (
+              <Card key={artwork.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative">
+                  <img 
+                    src={artwork.image} 
+                    alt={artwork.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute top-2 right-2 bg-white rounded-full p-1">
+                    <Heart className="h-4 w-4 text-gray-600" />
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-1">{artwork.title}</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-orange-600">{artwork.price}</span>
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-3 w-3 text-red-500" />
+                      <span className="text-xs text-gray-600">{artwork.likes}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600">{artwork.created}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </TabsContent>
+        
         <TabsContent value="collections">
-          <p>Collections will be displayed here</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                id: 1,
+                title: "Hawaiian Heritage",
+                items: 12,
+                floorPrice: "280 MACS",
+                image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400"
+              },
+              {
+                id: 2,
+                title: "Digital Landscapes",
+                items: 8,
+                floorPrice: "320 MACS",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400"
+              },
+              {
+                id: 3,
+                title: "Cultural Fusion",
+                items: 15,
+                floorPrice: "450 MACS",
+                image: "https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=400"
+              }
+            ].map((collection) => (
+              <Card key={collection.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <img 
+                  src={collection.image} 
+                  alt={collection.title}
+                  className="w-full h-48 object-cover"
+                />
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-1">{collection.title}</h3>
+                  <div className="flex justify-between text-sm">
+                    <span>{collection.items} items</span>
+                    <span className="font-medium">Floor: {collection.floorPrice}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
+        
         <TabsContent value="activity">
-          <p>Activity feed will be displayed here</p>
+          <div className="space-y-4">
+            {[
+              {
+                id: 1,
+                type: "sale",
+                title: "Sold 'Hawaiian Sunset Dreams'",
+                amount: "450 MACS",
+                time: "2 hours ago"
+              },
+              {
+                id: 2,
+                type: "mint",
+                title: "Minted 'Digital Aloha'",
+                amount: null,
+                time: "1 day ago"
+              },
+              {
+                id: 3,
+                type: "follow",
+                title: "Gained 50 new followers",
+                amount: null,
+                time: "3 days ago"
+              },
+              {
+                id: 4,
+                type: "sale",
+                title: "Sold 'Island Vibes'",
+                amount: "280 MACS",
+                time: "1 week ago"
+              }
+            ].map((activity) => (
+              <Card key={activity.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">{activity.title}</h4>
+                      <p className="text-sm text-gray-600">{activity.time}</p>
+                    </div>
+                    {activity.amount && (
+                      <span className="font-bold text-green-600">{activity.amount}</span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="about">
+          <Card>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold mb-2">About {userData.username}</h3>
+                  <p className="text-gray-600">{userData.bio}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Specialties</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {userData.specialties.map((specialty, index) => (
+                      <Badge key={index} variant="outline">{specialty}</Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Contact</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <span>{userData.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ExternalLink className="h-4 w-4" />
+                      <a href={userData.website} className="text-blue-600 hover:underline">
+                        {userData.website}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
@@ -668,54 +1225,294 @@ function AppContent() {
   // Wallet page content
   const renderWalletPage = () => (
     <div className="space-y-6">
+      {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-4">Wallet</h1>
-        <p className="text-gray-600">Manage your MACS tokens and NFTs</p>
+        <p className="text-gray-600">Manage your MACS tokens and NFTs across multiple chains</p>
       </div>
+
+      {/* Network Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            Network Selection
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { id: 'polygon', name: 'Polygon', color: 'bg-purple-500', active: selectedChain === 'polygon' },
+              { id: 'solana', name: 'Solana', color: 'bg-green-500', active: selectedChain === 'solana' },
+              { id: 'xrp', name: 'XRP Ledger', color: 'bg-blue-500', active: selectedChain === 'xrp' },
+              { id: 'xdc', name: 'XDC Network', color: 'bg-yellow-500', active: selectedChain === 'xdc' }
+            ].map((network) => (
+              <button
+                key={network.id}
+                onClick={() => setSelectedChain(network.id)}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  network.active 
+                    ? 'border-orange-500 bg-orange-50' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className={`w-8 h-8 ${network.color} rounded-full mx-auto mb-2`}></div>
+                <div className="text-sm font-medium">{network.name}</div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Wallet Balance */}
       <Card>
         <CardHeader>
-          <CardTitle>Total Balance</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>Total Portfolio Value</span>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm text-green-600">+12.5%</span>
+            </div>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center">
-            <p className="text-4xl font-bold text-orange-600 mb-2">
+          <div className="text-center mb-6">
+            <p className="text-5xl font-bold text-orange-600 mb-2">
               {balances.total.macs.toLocaleString()} MACS
             </p>
-            <p className="text-xl text-gray-600">
+            <p className="text-2xl text-gray-600">
               ≈ ${balances.total.usd.toLocaleString()}
             </p>
+          </div>
+          
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Button className="flex flex-col gap-1 h-auto py-3">
+              <ArrowUpRight className="h-5 w-5" />
+              <span className="text-xs">Send</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col gap-1 h-auto py-3">
+              <ArrowDownLeft className="h-5 w-5" />
+              <span className="text-xs">Receive</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col gap-1 h-auto py-3" onClick={() => setCurrentPage('bridge')}>
+              <RefreshCw className="h-5 w-5" />
+              <span className="text-xs">Bridge</span>
+            </Button>
+            <Button variant="outline" className="flex flex-col gap-1 h-auto py-3">
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-xs">Analytics</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Chain Balances */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Object.entries(balances).filter(([key]) => key !== 'total').map(([chain, balance]) => (
-          <Card key={chain}>
-            <CardContent className="p-4">
-              <div className="text-center">
-                <h3 className="font-semibold capitalize mb-2">{chain}</h3>
-                <p className="text-lg font-bold">{balance.macs} MACS</p>
-                <p className="text-sm text-gray-600">${balance.usd}</p>
+      <div>
+        <h2 className="text-xl font-bold mb-4">Chain Balances</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Object.entries(balances).filter(([key]) => key !== 'total').map(([chain, balance]) => (
+            <Card key={chain} className={`cursor-pointer transition-all ${selectedChain === chain ? 'ring-2 ring-orange-500' : 'hover:shadow-lg'}`} onClick={() => setSelectedChain(chain)}>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className={`w-6 h-6 rounded-full ${
+                      chain === 'polygon' ? 'bg-purple-500' :
+                      chain === 'solana' ? 'bg-green-500' :
+                      chain === 'xrp' ? 'bg-blue-500' : 'bg-yellow-500'
+                    }`}></div>
+                    <h3 className="font-semibold capitalize">{chain}</h3>
+                  </div>
+                  <p className="text-lg font-bold">{balance.macs} MACS</p>
+                  <p className="text-sm text-gray-600">${balance.usd}</p>
+                  <div className="mt-2">
+                    <Button size="sm" variant="outline" className="w-full">
+                      Manage
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Wallet Content Tabs */}
+      <Tabs defaultValue="transactions" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="transactions">Transactions</TabsTrigger>
+          <TabsTrigger value="nfts">NFTs</TabsTrigger>
+          <TabsTrigger value="staking">Staking</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="transactions" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Recent Transactions</h3>
+            <Button variant="outline" size="sm">View All</Button>
+          </div>
+          <div className="space-y-3">
+            {[
+              {
+                id: 1,
+                type: 'send',
+                amount: '-250 MACS',
+                to: '0x1234...5678',
+                time: '2 hours ago',
+                status: 'completed'
+              },
+              {
+                id: 2,
+                type: 'receive',
+                amount: '+450 MACS',
+                from: '0x9876...4321',
+                time: '1 day ago',
+                status: 'completed'
+              },
+              {
+                id: 3,
+                type: 'bridge',
+                amount: '100 MACS',
+                from: 'Polygon',
+                to: 'Solana',
+                time: '3 days ago',
+                status: 'completed'
+              },
+              {
+                id: 4,
+                type: 'mint',
+                amount: 'NFT Minted',
+                collection: 'Hawaiian Heritage',
+                time: '1 week ago',
+                status: 'completed'
+              }
+            ].map((tx) => (
+              <Card key={tx.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        tx.type === 'send' ? 'bg-red-100' :
+                        tx.type === 'receive' ? 'bg-green-100' :
+                        tx.type === 'bridge' ? 'bg-blue-100' : 'bg-purple-100'
+                      }`}>
+                        {tx.type === 'send' && <ArrowUpRight className="h-5 w-5 text-red-600" />}
+                        {tx.type === 'receive' && <ArrowDownLeft className="h-5 w-5 text-green-600" />}
+                        {tx.type === 'bridge' && <RefreshCw className="h-5 w-5 text-blue-600" />}
+                        {tx.type === 'mint' && <Plus className="h-5 w-5 text-purple-600" />}
+                      </div>
+                      <div>
+                        <div className="font-medium capitalize">{tx.type}</div>
+                        <div className="text-sm text-gray-600">{tx.time}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`font-medium ${
+                        tx.type === 'send' ? 'text-red-600' :
+                        tx.type === 'receive' ? 'text-green-600' : 'text-gray-900'
+                      }`}>
+                        {tx.amount}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {tx.to && `To: ${tx.to}`}
+                        {tx.from && `From: ${tx.from}`}
+                        {tx.collection && `Collection: ${tx.collection}`}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="nfts" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">My NFTs</h3>
+            <Button variant="outline" size="sm">Create NFT</Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[
+              {
+                id: 1,
+                title: "Hawaiian Sunset #001",
+                collection: "Hawaiian Heritage",
+                image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=300"
+              },
+              {
+                id: 2,
+                title: "Digital Aloha #042",
+                collection: "Digital Landscapes",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300"
+              },
+              {
+                id: 3,
+                title: "Island Vibes #123",
+                collection: "Cultural Fusion",
+                image: "https://images.unsplash.com/photo-1549289524-06cf8837ace5?w=300"
+              },
+              {
+                id: 4,
+                title: "Ocean Dreams #089",
+                collection: "Hawaiian Heritage",
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300"
+              }
+            ].map((nft) => (
+              <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <img 
+                  src={nft.image} 
+                  alt={nft.title}
+                  className="w-full h-48 object-cover"
+                />
+                <CardContent className="p-3">
+                  <h4 className="font-medium text-sm mb-1">{nft.title}</h4>
+                  <p className="text-xs text-gray-600">{nft.collection}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="staking" className="space-y-4">
+          <div className="text-center py-8">
+            <Shield className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Staking Coming Soon</h3>
+            <p className="text-gray-600 mb-4">Earn rewards by staking your MACS tokens</p>
+            <Button variant="outline">Learn More</Button>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="settings" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wallet Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Auto-approve transactions</h4>
+                  <p className="text-sm text-gray-600">Automatically approve small transactions</p>
+                </div>
+                <Button variant="outline" size="sm">Configure</Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Security settings</h4>
+                  <p className="text-sm text-gray-600">Manage your wallet security</p>
+                </div>
+                <Button variant="outline" size="sm">Manage</Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">Connected apps</h4>
+                  <p className="text-sm text-gray-600">View and manage connected applications</p>
+                </div>
+                <Button variant="outline" size="sm">View</Button>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      {/* Wallet Actions */}
-      <div className="flex justify-center gap-4">
-        <Button onClick={() => setCurrentPage('bridge')}>
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Bridge Tokens
-        </Button>
-        <Button variant="outline">
-          <Copy className="h-4 w-4 mr-2" />
-          Copy Address
-        </Button>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 
@@ -799,7 +1596,7 @@ function AppContent() {
               </div>
 
               {/* Desktop Navigation */}
-              <nav className="hidden lg:flex items-center space-x-1">
+              <nav className="hidden md:flex items-center space-x-1">
                 {navigationItems.slice(0, 5).map((item) => {
                   const Icon = item.icon
                   const colors = {
@@ -860,7 +1657,7 @@ function AppContent() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="lg:hidden"
+                  className="md:hidden"
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
                   {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -870,7 +1667,7 @@ function AppContent() {
 
             {/* Mobile Navigation */}
             {mobileMenuOpen && (
-              <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 py-4">
+              <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4">
                 <nav className="space-y-2">
                   {navigationItems.slice(0, 5).map((item) => {
                     const Icon = item.icon
