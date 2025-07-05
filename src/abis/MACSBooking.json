@@ -1,0 +1,86 @@
+[
+  {
+    "inputs": [
+      {"internalType": "address", "name": "artist", "type": "address"},
+      {"internalType": "uint256", "name": "amount", "type": "uint256"},
+      {"internalType": "uint256", "name": "startTime", "type": "uint256"},
+      {"internalType": "uint256", "name": "duration", "type": "uint256"},
+      {"internalType": "string", "name": "serviceDescription", "type": "string"}
+    ],
+    "name": "createBooking",
+    "outputs": [{"internalType": "uint256", "name": "bookingId", "type": "uint256"}],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "bookingId", "type": "uint256"}],
+    "name": "confirmBooking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "bookingId", "type": "uint256"}],
+    "name": "completeBooking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "bookingId", "type": "uint256"}],
+    "name": "cancelBooking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "bookingId", "type": "uint256"}],
+    "name": "getBooking",
+    "outputs": [
+      {"internalType": "address", "name": "client", "type": "address"},
+      {"internalType": "address", "name": "artist", "type": "address"},
+      {"internalType": "uint256", "name": "amount", "type": "uint256"},
+      {"internalType": "uint256", "name": "startTime", "type": "uint256"},
+      {"internalType": "uint256", "name": "duration", "type": "uint256"},
+      {"internalType": "uint8", "name": "status", "type": "uint8"},
+      {"internalType": "string", "name": "serviceDescription", "type": "string"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "user", "type": "address"}],
+    "name": "getUserBookings",
+    "outputs": [{"internalType": "uint256[]", "name": "", "type": "uint256[]"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "bookingId", "type": "uint256"},
+      {"internalType": "address", "name": "client", "type": "address"},
+      {"internalType": "address", "name": "artist", "type": "address"},
+      {"internalType": "uint256", "name": "amount", "type": "uint256"}
+    ],
+    "name": "BookingCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "bookingId", "type": "uint256"},
+      {"internalType": "address", "name": "artist", "type": "address"}
+    ],
+    "name": "BookingConfirmed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "bookingId", "type": "uint256"},
+      {"internalType": "address", "name": "artist", "type": "address"},
+      {"internalType": "uint256", "name": "amount", "type": "uint256"}
+    ],
+    "name": "BookingCompleted",
+    "type": "event"
+  }
+]
+
