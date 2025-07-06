@@ -1,7 +1,3 @@
-/* Google Fonts for MACS Branding - MUST come before Tailwind */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -93,10 +89,6 @@
     --sidebar-accent-foreground: #FAFAFA;
     --sidebar-border: #2A2A2A;
     --sidebar-ring: var(--macs-orange);
-  }
-
-  * {
-    @apply border border-border ring ring-primary/50;
   }
 
   body {
