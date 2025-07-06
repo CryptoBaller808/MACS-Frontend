@@ -40,6 +40,7 @@ import {
   LogOut,
   UserPlus
 } from 'lucide-react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
@@ -54,14 +55,15 @@ import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
 import AuthModal from './components/AuthModal.jsx'
 import APIStatus from './components/APIStatus.jsx'
 import ProfileManager from './components/ProfileManager.jsx'
+import ArtistDashboard from './components/ArtistDashboard.jsx'
+import PublicArtistProfile from './components/PublicArtistProfile.jsx'
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
-
-// Import new Phase 5 components
+import { LanguageProvider, useTranslation } from './contexts/LanguageContext.jsx'
+import NotificationSystem from './components/NotificationSystem.jsx'
 import CreatorDashboard from './components/CreatorDashboard.jsx'
 import CollectorDashboard from './components/CollectorDashboard.jsx'
 import LiveActivityFeed from './components/LiveActivityFeed.jsx'
 import GuidedOnboarding from './components/GuidedOnboarding.jsx'
-import NotificationSystem from './components/NotificationSystem.jsx'
 import SocialSharing from './components/SocialSharing.jsx'
 import InviteFriends from './components/InviteFriends.jsx'
 import LanguageSwitcher from './components/LanguageSwitcher.jsx'
@@ -69,7 +71,6 @@ import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 // Import new Phase 6 AI components
 import AIRecommendations from './components/AIRecommendations.jsx'
 import EnhancedSearch from './components/EnhancedSearch.jsx'
-import { LanguageProvider, useTranslation } from './contexts/LanguageContext.jsx'
 
 import macsLogo from './assets/MuseArtLogo.png'
 import './App.css'
@@ -1827,14 +1828,40 @@ function AppContent() {
 }
 
 // Main App component with Language and Auth Providers
+// Main App with routing
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </LanguageProvider>
+    <Router>
+      <LanguageProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<AppContent />} />
+            <Route path="/dashboard" element={<ProtectedRoute><ArtistDashboard /></ProtectedRoute>} />
+            <Route path="/artists/:id" element={<PublicArtistProfile />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </LanguageProvider>
+    </Router>
   )
+}
+
+// Protected Route component for authenticated users
+function ProtectedRoute({ children }) {
+  const { isAuthenticated, isLoading } = useAuth()
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  return isAuthenticated ? children : <Navigate to="/" replace />
 }
 
 export default App

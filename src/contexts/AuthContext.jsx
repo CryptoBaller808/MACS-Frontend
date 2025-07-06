@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import apiService from '../services/apiService.js';
 
 // Create the Auth Context
@@ -19,6 +20,8 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Initialize auth state on app load
   useEffect(() => {
@@ -66,6 +69,10 @@ export const AuthProvider = ({ children }) => {
       if (response.success) {
         setUser(response.data.user);
         setIsAuthenticated(true);
+        
+        // Redirect to dashboard after successful login
+        navigate('/dashboard');
+        
         return { success: true, user: response.data.user };
       } else {
         setError(response.message || 'Login failed');
