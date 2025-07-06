@@ -35,7 +35,10 @@ import {
   Bookmark,
   Home,
   MessageSquare,
-  Search
+  Search,
+  LogIn,
+  LogOut,
+  UserPlus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
@@ -46,6 +49,12 @@ import { Label } from '@/components/ui/label.jsx'
 import { Progress } from '@/components/ui/progress.jsx'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.jsx'
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+
+// Import new authentication and API components
+import AuthModal from './components/AuthModal.jsx'
+import APIStatus from './components/APIStatus.jsx'
+import ProfileManager from './components/ProfileManager.jsx'
+import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
 
 // Import new Phase 5 components
 import CreatorDashboard from './components/CreatorDashboard.jsx'
@@ -68,9 +77,15 @@ import './App.css'
 // Main App Component wrapped with Language Provider
 function AppContent() {
   const { t } = useTranslation()
+  const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth()
+  
   const [darkMode, setDarkMode] = useState(false)
   const [currentPage, setCurrentPage] = useState('feed')
   const [selectedChain, setSelectedChain] = useState('polygon')
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState('login')
+  const [showProfileManager, setShowProfileManager] = useState(false)
+  
   const [connectedWallets, setConnectedWallets] = useState({
     polygon: null,
     solana: null,
@@ -117,6 +132,43 @@ function AppContent() {
     specialties: ['Digital Art', 'NFT Collections', 'Cultural Heritage'],
     achievements: ['Top Creator 2024', 'Heritage Ambassador', 'Community Choice Award']
   })
+
+  // Authentication helper functions
+  const handleLogin = () => {
+    setAuthModalMode('login')
+    setShowAuthModal(true)
+  }
+
+  const handleRegister = () => {
+    setAuthModalMode('register')
+    setShowAuthModal(true)
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    setCurrentPage('feed')
+  }
+
+  const openProfileManager = () => {
+    setShowProfileManager(true)
+  }
+
+  // Update userData to use authenticated user or fallback to mock data
+  const currentUserData = isAuthenticated && user ? {
+    username: user.username || 'user',
+    avatar: user.profile_picture || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
+    verified: user.is_verified || false,
+    followers: user.followers || 0,
+    following: user.following || 0,
+    artworks: user.artworks || 0,
+    collections: user.collections || 0,
+    totalSales: user.totalSales || 0,
+    bio: user.bio || 'Welcome to MACS Platform!',
+    location: user.location || 'Global',
+    website: user.website || '',
+    specialties: user.specialties || [],
+    achievements: user.achievements || []
+  } : userData
 
   // Navigation items
   const navigationItems = [
@@ -1625,33 +1677,76 @@ function AppContent() {
 
               {/* Right side controls */}
               <div className="flex items-center gap-3">
+                {/* API Status Badge */}
+                <APIStatus className="hidden lg:block" />
+
                 {/* Search */}
                 <div className="hidden md:block">
                   <Input
-                    placeholder="Search with disoulting"
+                    placeholder="Search artists and artworks"
                     className="w-64"
                   />
                 </div>
 
                 {/* Notifications */}
                 <Button variant="ghost" size="sm" className="relative">
-                  🔔
+                  <Bell className="h-4 w-4" />
                 </Button>
 
-                {/* Messages */}
-                <Button variant="ghost" size="sm">
-                  💬
-                </Button>
-
-                {/* Join as Creator */}
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                  Join as Creator
-                </Button>
-
-                {/* Connect Wallet */}
-                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
-                  Connect Wallet
-                </Button>
+                {/* Authentication Controls */}
+                {isAuthenticated ? (
+                  <>
+                    {/* User Avatar and Menu */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={openProfileManager}
+                        className="flex items-center gap-2"
+                      >
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={currentUserData.avatar} />
+                          <AvatarFallback>
+                            {currentUserData.username?.charAt(0)?.toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="hidden sm:inline">{currentUserData.username}</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span className="hidden sm:inline ml-1">Logout</span>
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Login/Register Buttons */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleLogin}
+                      className="flex items-center gap-1"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      <span className="hidden sm:inline">Login</span>
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      onClick={handleRegister}
+                      className="bg-orange-600 hover:bg-orange-700 text-white flex items-center gap-1"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span className="hidden sm:inline">Join MACS</span>
+                    </Button>
+                  </>
+                )}
 
                 {/* Mobile menu button */}
                 <Button
@@ -1709,15 +1804,35 @@ function AppContent() {
           </div>
         </footer>
       </div>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+      />
+
+      {/* Profile Manager Modal */}
+      {showProfileManager && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <ProfileManager onClose={() => setShowProfileManager(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-// Main App component with Language Provider
+// Main App component with Language and Auth Providers
 function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </LanguageProvider>
   )
 }
