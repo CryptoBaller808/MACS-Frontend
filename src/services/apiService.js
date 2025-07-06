@@ -279,10 +279,22 @@ const apiService = {
 
   // Booking system
   booking: {
+    // Get all bookings for current user (artist or client)
     async getBookings() {
       return await apiRequest('/booking');
     },
 
+    // Get bookings for a specific artist
+    async getArtistBookings(artistId) {
+      return await apiRequest(`/booking/artist/${artistId}`);
+    },
+
+    // Get bookings for current user as client
+    async getClientBookings() {
+      return await apiRequest('/booking/client');
+    },
+
+    // Create a new booking request
     async createBooking(bookingData) {
       return await apiRequest('/booking', {
         method: 'POST',
@@ -290,10 +302,12 @@ const apiService = {
       });
     },
 
+    // Get specific booking details
     async getBooking(bookingId) {
       return await apiRequest(`/booking/${bookingId}`);
     },
 
+    // Update booking (accept, decline, modify)
     async updateBooking(bookingId, bookingData) {
       return await apiRequest(`/booking/${bookingId}`, {
         method: 'PUT',
@@ -301,10 +315,232 @@ const apiService = {
       });
     },
 
+    // Accept a booking request
+    async acceptBooking(bookingId) {
+      return await apiRequest(`/booking/${bookingId}/accept`, {
+        method: 'POST',
+      });
+    },
+
+    // Decline a booking request
+    async declineBooking(bookingId, reason = '') {
+      return await apiRequest(`/booking/${bookingId}/decline`, {
+        method: 'POST',
+        body: { reason },
+      });
+    },
+
+    // Cancel a booking
+    async cancelBooking(bookingId, reason = '') {
+      return await apiRequest(`/booking/${bookingId}/cancel`, {
+        method: 'POST',
+        body: { reason },
+      });
+    },
+
+    // Complete a booking
+    async completeBooking(bookingId) {
+      return await apiRequest(`/booking/${bookingId}/complete`, {
+        method: 'POST',
+      });
+    },
+
+    // Delete a booking
     async deleteBooking(bookingId) {
       return await apiRequest(`/booking/${bookingId}`, {
         method: 'DELETE',
       });
+    },
+
+    // Get booking statistics for artist
+    async getBookingStats(artistId) {
+      return await apiRequest(`/booking/stats/${artistId}`);
+    }
+  },
+
+  // Calendar and availability management
+  calendar: {
+    // Get artist availability
+    async getAvailability(artistId) {
+      return await apiRequest(`/calendar/availability/${artistId}`);
+    },
+
+    // Set artist availability
+    async setAvailability(availabilityData) {
+      return await apiRequest('/calendar/availability', {
+        method: 'POST',
+        body: availabilityData,
+      });
+    },
+
+    // Update availability
+    async updateAvailability(availabilityId, availabilityData) {
+      return await apiRequest(`/calendar/availability/${availabilityId}`, {
+        method: 'PUT',
+        body: availabilityData,
+      });
+    },
+
+    // Delete availability slot
+    async deleteAvailability(availabilityId) {
+      return await apiRequest(`/calendar/availability/${availabilityId}`, {
+        method: 'DELETE',
+      });
+    },
+
+    // Get available time slots for a specific date
+    async getAvailableSlots(artistId, date) {
+      return await apiRequest(`/calendar/slots/${artistId}?date=${date}`);
+    },
+
+    // Get calendar events for artist
+    async getCalendarEvents(artistId, startDate, endDate) {
+      return await apiRequest(`/calendar/events/${artistId}?start=${startDate}&end=${endDate}`);
+    },
+
+    // Block time slot (mark as unavailable)
+    async blockTimeSlot(blockData) {
+      return await apiRequest('/calendar/block', {
+        method: 'POST',
+        body: blockData,
+      });
+    },
+
+    // Unblock time slot
+    async unblockTimeSlot(blockId) {
+      return await apiRequest(`/calendar/block/${blockId}`, {
+        method: 'DELETE',
+      });
+    }
+  },
+
+  // Service management for artists
+  services: {
+    // Get artist services
+    async getServices(artistId) {
+      return await apiRequest(`/services/artist/${artistId}`);
+    },
+
+    // Create new service
+    async createService(serviceData) {
+      return await apiRequest('/services', {
+        method: 'POST',
+        body: serviceData,
+      });
+    },
+
+    // Update service
+    async updateService(serviceId, serviceData) {
+      return await apiRequest(`/services/${serviceId}`, {
+        method: 'PUT',
+        body: serviceData,
+      });
+    },
+
+    // Delete service
+    async deleteService(serviceId) {
+      return await apiRequest(`/services/${serviceId}`, {
+        method: 'DELETE',
+      });
+    },
+
+    // Get service categories
+    async getServiceCategories() {
+      return await apiRequest('/services/categories');
+    }
+  },
+
+  // Media management
+  media: {
+    // Get artist media/gallery
+    async getArtistMedia(artistId) {
+      return await apiRequest(`/media/artist/${artistId}`);
+    },
+
+    // Upload media file
+    async uploadMedia(formData) {
+      const url = getApiUrl('/media/upload');
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`,
+        },
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    },
+
+    // Get specific media item
+    async getMediaById(mediaId) {
+      return await apiRequest(`/media/${mediaId}`);
+    },
+
+    // Update media metadata
+    async updateMedia(mediaId, updateData) {
+      return await apiRequest(`/media/${mediaId}`, {
+        method: 'PUT',
+        body: updateData,
+      });
+    },
+
+    // Delete media
+    async deleteMedia(mediaId) {
+      return await apiRequest(`/media/${mediaId}`, {
+        method: 'DELETE',
+      });
+    },
+
+    // Like media
+    async likeMedia(mediaId) {
+      return await apiRequest(`/media/${mediaId}/like`, {
+        method: 'POST',
+      });
+    },
+
+    // Unlike media
+    async unlikeMedia(mediaId) {
+      return await apiRequest(`/media/${mediaId}/like`, {
+        method: 'DELETE',
+      });
+    },
+
+    // Get media likes
+    async getMediaLikes(mediaId) {
+      return await apiRequest(`/media/${mediaId}/likes`);
+    },
+
+    // Add media view
+    async addMediaView(mediaId) {
+      return await apiRequest(`/media/${mediaId}/view`, {
+        method: 'POST',
+      });
+    },
+
+    // Get media stats
+    async getMediaStats(mediaId) {
+      return await apiRequest(`/media/${mediaId}/stats`);
+    },
+
+    // Search media
+    async searchMedia(query, filters = {}) {
+      const params = new URLSearchParams({ query, ...filters });
+      return await apiRequest(`/media/search?${params}`);
+    },
+
+    // Get featured media
+    async getFeaturedMedia() {
+      return await apiRequest('/media/featured');
+    },
+
+    // Get trending media
+    async getTrendingMedia() {
+      return await apiRequest('/media/trending');
     }
   },
 

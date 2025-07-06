@@ -12,10 +12,19 @@ import {
   Users,
   TrendingUp,
   Edit,
-  Camera
+  Camera,
+  Calendar,
+  Clock,
+  DollarSign,
+  Image,
+  Video
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import AvatarUpload from './AvatarUpload';
+import CalendarComponent from './Calendar';
+import BookingManager from './BookingManager';
+import NotificationSystem from './NotificationSystem';
+import MediaGallery from './MediaGallery';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -37,6 +46,9 @@ const ArtistDashboard = () => {
   const sidebarItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'profile', label: 'Profile', icon: User },
+    { id: 'gallery', label: 'Media Gallery', icon: Image },
+    { id: 'calendar', label: 'Calendar', icon: Calendar },
+    { id: 'bookings', label: 'Bookings', icon: Clock },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'messages', label: 'Messages', icon: MessageCircle },
     { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -45,9 +57,15 @@ const ArtistDashboard = () => {
 
   const stats = [
     { label: 'Profile Views', value: '12,847', change: '+12%', icon: Eye, color: 'text-macs-blue-600' },
-    { label: 'Artwork Likes', value: '3,429', change: '+8%', icon: Heart, color: 'text-red-500' },
-    { label: 'Followers', value: '1,256', change: '+15%', icon: Users, color: 'text-macs-amber-600' },
-    { label: 'Monthly Views', value: '45,123', change: '+22%', icon: TrendingUp, color: 'text-green-600' },
+    { label: 'Total Bookings', value: '47', change: '+23%', icon: Calendar, color: 'text-macs-amber-600' },
+    { label: 'Monthly Revenue', value: '$2,450', change: '+18%', icon: DollarSign, color: 'text-green-600' },
+    { label: 'Followers', value: '1,256', change: '+15%', icon: Users, color: 'text-macs-blue-600' },
+  ];
+
+  const recentBookings = [
+    { id: 1, client: 'Sarah Johnson', service: 'Portrait Session', date: '2024-07-15', status: 'confirmed', amount: 150 },
+    { id: 2, client: 'Michael Chen', service: 'Music Collaboration', date: '2024-07-18', status: 'pending', amount: 200 },
+    { id: 3, client: 'Emma Davis', service: 'Art Tutoring', date: '2024-07-12', status: 'completed', amount: 75 },
   ];
 
   const recentArtworks = [
@@ -71,6 +89,21 @@ const ArtistDashboard = () => {
     setProfile(prev => ({ ...prev, avatar: avatarUrl }));
   };
 
+  const getStatusBadge = (status) => {
+    const colors = {
+      pending: 'bg-amber-100 text-amber-800',
+      confirmed: 'bg-green-100 text-green-800',
+      completed: 'bg-macs-blue-100 text-macs-blue-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-macs-gray-100 text-macs-gray-800'}`}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
   const renderDashboard = () => (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -81,7 +114,7 @@ const ArtistDashboard = () => {
               Welcome back, {profile.name}! 👋
             </h1>
             <p className="text-body text-macs-gray-600">
-              Here's what's happening with your art today.
+              Here's what's happening with your art and bookings today.
             </p>
           </div>
           <Link to={`/artists/${profile.username}`} className="btn-outline">
@@ -111,6 +144,42 @@ const ArtistDashboard = () => {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Bookings */}
+        <div className="card-macs p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-h4 text-macs-gray-900">Recent Bookings</h3>
+            <button 
+              onClick={() => setActiveTab('bookings')}
+              className="btn-primary text-sm"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Manage Bookings
+            </button>
+          </div>
+          <div className="space-y-4">
+            {recentBookings.map((booking) => (
+              <div key={booking.id} className="flex items-center justify-between p-4 bg-macs-gray-50 rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-macs-blue-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-macs-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-macs-gray-900">{booking.client}</h4>
+                    <p className="text-sm text-macs-gray-600">{booking.service}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-xs text-macs-gray-500">{booking.date}</span>
+                      {getStatusBadge(booking.status)}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-macs-amber-600">${booking.amount}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Recent Artworks */}
         <div className="card-macs p-6">
           <div className="flex items-center justify-between mb-6">
@@ -149,28 +218,37 @@ const ArtistDashboard = () => {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Quick Actions */}
-        <div className="card-macs p-6">
-          <h3 className="text-h4 text-macs-gray-900 mb-6">Quick Actions</h3>
-          <div className="space-y-4">
-            <button className="w-full btn-primary justify-start">
-              <Upload className="h-5 w-5 mr-3" />
-              Upload New Artwork
-            </button>
-            <button className="w-full btn-secondary justify-start">
-              <Edit className="h-5 w-5 mr-3" />
-              Edit Profile
-            </button>
-            <button className="w-full btn-outline justify-start">
-              <BarChart3 className="h-5 w-5 mr-3" />
-              View Analytics
-            </button>
-            <button className="w-full btn-ghost justify-start">
-              <MessageCircle className="h-5 w-5 mr-3" />
-              Check Messages
-            </button>
-          </div>
+      {/* Quick Actions */}
+      <div className="card-macs p-6">
+        <h3 className="text-h4 text-macs-gray-900 mb-6">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button 
+            onClick={() => setActiveTab('gallery')}
+            className="btn-primary justify-start"
+          >
+            <Upload className="h-5 w-5 mr-3" />
+            Upload Artwork
+          </button>
+          <button 
+            onClick={() => setActiveTab('calendar')}
+            className="btn-secondary justify-start"
+          >
+            <Calendar className="h-5 w-5 mr-3" />
+            Set Availability
+          </button>
+          <button 
+            onClick={() => setActiveTab('bookings')}
+            className="btn-outline justify-start"
+          >
+            <Clock className="h-5 w-5 mr-3" />
+            Manage Bookings
+          </button>
+          <button className="btn-ghost justify-start">
+            <MessageCircle className="h-5 w-5 mr-3" />
+            Check Messages
+          </button>
         </div>
       </div>
     </div>
@@ -356,6 +434,42 @@ const ArtistDashboard = () => {
         return renderDashboard();
       case 'profile':
         return renderProfile();
+      case 'gallery':
+        return (
+          <div className="space-y-6">
+            <div className="card-macs p-6">
+              <h2 className="text-h3 text-macs-blue-600 mb-4">Media Gallery</h2>
+              <p className="text-macs-gray-600 mb-6">
+                Upload and manage your artwork portfolio. Share your creative journey with the world.
+              </p>
+              <MediaGallery artistId={user?.id} isOwner={true} />
+            </div>
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div className="space-y-6">
+            <div className="card-macs p-6">
+              <h2 className="text-h3 text-macs-blue-600 mb-4">Calendar & Availability</h2>
+              <p className="text-macs-gray-600 mb-6">
+                Manage your availability and view upcoming bookings.
+              </p>
+              <CalendarComponent artistId={user?.id} />
+            </div>
+          </div>
+        );
+      case 'bookings':
+        return (
+          <div className="space-y-6">
+            <div className="card-macs p-6">
+              <h2 className="text-h3 text-macs-blue-600 mb-4">Booking Management</h2>
+              <p className="text-macs-gray-600 mb-6">
+                Manage your booking requests, services, and pricing.
+              </p>
+              <BookingManager artistId={user?.id} />
+            </div>
+          </div>
+        );
       case 'analytics':
         return (
           <div className="card-macs p-6">
@@ -372,9 +486,14 @@ const ArtistDashboard = () => {
         );
       case 'notifications':
         return (
-          <div className="card-macs p-6">
-            <h2 className="text-h3 text-macs-blue-600 mb-4">Notifications</h2>
-            <p className="text-macs-gray-600">Notification center coming soon...</p>
+          <div className="space-y-6">
+            <div className="card-macs p-6">
+              <h2 className="text-h3 text-macs-blue-600 mb-4">Notifications</h2>
+              <p className="text-macs-gray-600 mb-6">
+                Stay updated with booking requests, messages, and important updates.
+              </p>
+              <NotificationSystem />
+            </div>
           </div>
         );
       case 'settings':

@@ -12,13 +12,24 @@ import {
   Star,
   Eye,
   Clock,
-  DollarSign
+  DollarSign,
+  Calendar,
+  CheckCircle,
+  Tag,
+  Award,
+  Briefcase,
+  Mail,
+  Phone,
+  ExternalLink
 } from 'lucide-react';
+import BookingForm from './BookingForm';
+import MediaGallery from './MediaGallery';
 
 const PublicArtistProfile = () => {
   const { username } = useParams();
   const [activeTab, setActiveTab] = useState('gallery');
   const [isFollowing, setIsFollowing] = useState(false);
+  const [showBookingForm, setShowBookingForm] = useState(false);
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,17 +38,31 @@ const PublicArtistProfile = () => {
     // Simulate API call
     setTimeout(() => {
       setArtist({
+        id: 1,
         name: 'Jelite Somari',
         username: 'jelite_somari',
         avatar: '🎨',
         verified: true,
-        bio: 'Digital artist passionate about creating meaningful connections through art. Specializing in traditional ceramic art with modern interpretations.',
+        bio: 'Digital artist passionate about creating meaningful connections through art. Specializing in traditional ceramic art with modern interpretations. My work explores the intersection of heritage and contemporary expression.',
         location: "Côte d'Ivoire",
         website: 'https://jelitesomari.art',
         instagram: '@jelite_somari',
         twitter: '@jelite_art',
-        specialties: ['Ceramics', 'Traditional Art', 'Heritage'],
+        email: 'hello@jelitesomari.art',
+        phone: '+225 07 12 34 56 78',
+        specialties: ['Ceramics', 'Traditional Art', 'Heritage', 'Contemporary', 'Mixed Media'],
+        genres: ['Abstract', 'Cultural', 'Modern', 'Experimental'],
+        tags: ['ceramic', 'traditional', 'heritage', 'contemporary', 'african_art', 'handmade', 'cultural_fusion'],
+        achievements: [
+          'Featured Artist at Abidjan Art Fair 2023',
+          'Winner of Traditional Arts Award 2022',
+          'Solo Exhibition at Gallery Moderne 2023'
+        ],
+        education: 'Master of Fine Arts, École des Beaux-Arts d\'Abidjan',
+        experience: '8+ years in ceramic arts and cultural preservation',
+        languages: ['French', 'English', 'Baoulé'],
         joinedDate: 'March 2023',
+        bookingEnabled: true,
         stats: {
           followers: 12847,
           following: 234,
@@ -47,7 +72,9 @@ const PublicArtistProfile = () => {
           rating: 4.9,
           responseTime: '2 hours',
           completionRate: '98%',
-          hourlyRate: '$75'
+          hourlyRate: '$75',
+          totalProjects: 156,
+          repeatClients: '85%'
         }
       });
       setLoading(false);
@@ -210,18 +237,27 @@ const PublicArtistProfile = () => {
 
                 {/* Action Buttons */}
                 <div className="flex items-center space-x-4 mt-4 md:mt-0">
+                  {artist.bookingEnabled && (
+                    <button
+                      onClick={() => setShowBookingForm(true)}
+                      className="btn-primary"
+                    >
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Book Me
+                    </button>
+                  )}
                   <button
                     onClick={toggleFollow}
-                    className={`btn-primary ${isFollowing ? 'bg-macs-gray-600' : ''}`}
+                    className={`btn-secondary ${isFollowing ? 'bg-macs-gray-600' : ''}`}
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
                     {isFollowing ? 'Following' : 'Follow'}
                   </button>
-                  <button className="btn-secondary">
+                  <button className="btn-outline">
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Message
                   </button>
-                  <button className="btn-outline">
+                  <button className="btn-ghost">
                     <Share className="h-4 w-4 mr-2" />
                     Share
                   </button>
@@ -263,6 +299,21 @@ const PublicArtistProfile = () => {
             <div className="card-macs p-4 text-center">
               <p className="text-lg font-bold text-green-600">{artist.stats.completionRate}</p>
               <p className="text-xs text-macs-gray-600">Completion</p>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="mt-6">
+            <div className="flex flex-wrap gap-2">
+              {artist.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-macs-blue-50 text-macs-blue-600 hover:bg-macs-blue-100 transition-colors cursor-pointer"
+                >
+                  <Tag className="h-3 w-3 mr-1" />
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -311,60 +362,7 @@ const PublicArtistProfile = () => {
       {/* Tab Content */}
       <div className="max-w-6xl mx-auto px-4 py-8">
         {activeTab === 'gallery' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {artworks.map((artwork) => (
-              <div key={artwork.id} className="card-macs overflow-hidden group cursor-pointer">
-                <div className="relative">
-                  <div className="w-full h-64 bg-gradient-to-br from-macs-blue-100 to-macs-amber-100 flex items-center justify-center">
-                    <span className="text-4xl opacity-50">🎨</span>
-                  </div>
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-4">
-                      <button className="p-2 bg-white rounded-full text-macs-gray-700 hover:text-red-500">
-                        <Heart className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 bg-white rounded-full text-macs-gray-700 hover:text-macs-blue-600">
-                        <Eye className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 bg-white rounded-full text-macs-gray-700 hover:text-macs-blue-600">
-                        <Share className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </div>
-                  {artwork.status === 'sold' && (
-                    <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      Sold
-                    </div>
-                  )}
-                  {artwork.price && artwork.status === 'available' && (
-                    <div className="absolute top-4 right-4 bg-macs-amber-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {artwork.price} MACS
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-macs-gray-900 mb-2">{artwork.title}</h3>
-                  <div className="flex items-center justify-between text-sm text-macs-gray-600">
-                    <div className="flex items-center space-x-4">
-                      <span className="flex items-center space-x-1">
-                        <Heart className="h-4 w-4" />
-                        <span>{artwork.likes}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <Eye className="h-4 w-4" />
-                        <span>{formatNumber(artwork.views)}</span>
-                      </span>
-                    </div>
-                    {artwork.status === 'available' && artwork.price && (
-                      <button className="btn-accent text-xs px-3 py-1">
-                        Buy Now
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <MediaGallery artistId={artist.id} isOwner={false} />
         )}
 
         {activeTab === 'reviews' && (
@@ -419,75 +417,234 @@ const PublicArtistProfile = () => {
 
         {activeTab === 'about' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="card-macs p-6">
-              <h3 className="text-h4 text-macs-gray-900 mb-4">About the Artist</h3>
-              <p className="text-macs-gray-700 mb-6">{artist.bio}</p>
-              
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-macs-gray-900 mb-2">Specialties</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {artist.specialties.map((specialty) => (
-                      <span
-                        key={specialty}
-                        className="px-3 py-1 bg-macs-blue-50 text-macs-blue-600 text-sm rounded-full"
-                      >
-                        {specialty}
-                      </span>
-                    ))}
+            {/* Artist Information */}
+            <div className="space-y-6">
+              <div className="card-macs p-6">
+                <h3 className="text-h4 text-macs-gray-900 mb-4">About the Artist</h3>
+                <p className="text-macs-gray-700 mb-6">{artist.bio}</p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2 flex items-center">
+                      <Tag className="h-4 w-4 mr-2" />
+                      Specialties
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {artist.specialties.map((specialty) => (
+                        <span
+                          key={specialty}
+                          className="px-3 py-1 bg-macs-blue-50 text-macs-blue-600 text-sm rounded-full"
+                        >
+                          {specialty}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2 flex items-center">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Genres
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {artist.genres.map((genre) => (
+                        <span
+                          key={genre}
+                          className="px-3 py-1 bg-macs-amber-50 text-macs-amber-600 text-sm rounded-full"
+                        >
+                          {genre}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2 flex items-center">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Location
+                    </h4>
+                    <p className="text-macs-gray-700">{artist.location}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2 flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Member Since
+                    </h4>
+                    <p className="text-macs-gray-700">{artist.joinedDate}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2">Education</h4>
+                    <p className="text-macs-gray-700">{artist.education}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2">Experience</h4>
+                    <p className="text-macs-gray-700">{artist.experience}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-macs-gray-900 mb-2">Languages</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {artist.languages.map((language) => (
+                        <span
+                          key={language}
+                          className="px-3 py-1 bg-green-50 text-green-600 text-sm rounded-full"
+                        >
+                          {language}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                
-                <div>
-                  <h4 className="font-semibold text-macs-gray-900 mb-2">Location</h4>
-                  <p className="text-macs-gray-700">{artist.location}</p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-macs-gray-900 mb-2">Member Since</h4>
-                  <p className="text-macs-gray-700">{artist.joinedDate}</p>
+              </div>
+
+              {/* Achievements */}
+              <div className="card-macs p-6">
+                <h3 className="text-h4 text-macs-gray-900 mb-4 flex items-center">
+                  <Award className="h-5 w-5 mr-2" />
+                  Achievements & Recognition
+                </h3>
+                <div className="space-y-3">
+                  {artist.achievements.map((achievement, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-macs-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <p className="text-macs-gray-700">{achievement}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="card-macs p-6">
-              <h3 className="text-h4 text-macs-gray-900 mb-4">Work With Me</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-macs-gray-700">Hourly Rate</span>
-                  <span className="font-semibold text-macs-amber-600">{artist.stats.hourlyRate}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-macs-gray-700">Response Time</span>
-                  <span className="font-semibold text-green-600">{artist.stats.responseTime}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-macs-gray-700">Completion Rate</span>
-                  <span className="font-semibold text-green-600">{artist.stats.completionRate}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-macs-gray-700">Client Rating</span>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="font-semibold text-macs-gray-900">{artist.stats.rating}</span>
+            {/* Professional Information */}
+            <div className="space-y-6">
+              <div className="card-macs p-6">
+                <h3 className="text-h4 text-macs-gray-900 mb-4">Work With Me</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Hourly Rate</span>
+                    <span className="font-semibold text-macs-amber-600">{artist.stats.hourlyRate}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Response Time</span>
+                    <span className="font-semibold text-green-600">{artist.stats.responseTime}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Completion Rate</span>
+                    <span className="font-semibold text-green-600">{artist.stats.completionRate}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Client Rating</span>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="font-semibold text-macs-gray-900">{artist.stats.rating}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Total Projects</span>
+                    <span className="font-semibold text-macs-blue-600">{artist.stats.totalProjects}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-macs-gray-700">Repeat Clients</span>
+                    <span className="font-semibold text-macs-blue-600">{artist.stats.repeatClients}</span>
                   </div>
                 </div>
+                
+                <div className="mt-6 space-y-3">
+                  <button className="w-full btn-primary">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Send Message
+                  </button>
+                  <button className="w-full btn-secondary">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Request Quote
+                  </button>
+                </div>
               </div>
-              
-              <div className="mt-6 space-y-3">
-                <button className="w-full btn-primary">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Send Message
-                </button>
-                <button className="w-full btn-secondary">
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Request Quote
-                </button>
+
+              {/* Contact Information */}
+              <div className="card-macs p-6">
+                <h3 className="text-h4 text-macs-gray-900 mb-4">Contact Information</h3>
+                <div className="space-y-4">
+                  {artist.email && (
+                    <div className="flex items-center space-x-3">
+                      <Mail className="h-5 w-5 text-macs-gray-400" />
+                      <a 
+                        href={`mailto:${artist.email}`}
+                        className="text-macs-blue-600 hover:text-macs-blue-700 transition-colors"
+                      >
+                        {artist.email}
+                      </a>
+                    </div>
+                  )}
+                  {artist.phone && (
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-5 w-5 text-macs-gray-400" />
+                      <a 
+                        href={`tel:${artist.phone}`}
+                        className="text-macs-blue-600 hover:text-macs-blue-700 transition-colors"
+                      >
+                        {artist.phone}
+                      </a>
+                    </div>
+                  )}
+                  {artist.website && (
+                    <div className="flex items-center space-x-3">
+                      <Globe className="h-5 w-5 text-macs-gray-400" />
+                      <a 
+                        href={artist.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-macs-blue-600 hover:text-macs-blue-700 transition-colors flex items-center"
+                      >
+                        {artist.website.replace('https://', '')}
+                        <ExternalLink className="h-3 w-3 ml-1" />
+                      </a>
+                    </div>
+                  )}
+                  {artist.instagram && (
+                    <div className="flex items-center space-x-3">
+                      <Instagram className="h-5 w-5 text-macs-gray-400" />
+                      <a 
+                        href={`https://instagram.com/${artist.instagram.replace('@', '')}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-macs-blue-600 hover:text-macs-blue-700 transition-colors flex items-center"
+                      >
+                        {artist.instagram}
+                        <ExternalLink className="h-3 w-3 ml-1" />
+                      </a>
+                    </div>
+                  )}
+                  {artist.twitter && (
+                    <div className="flex items-center space-x-3">
+                      <Twitter className="h-5 w-5 text-macs-gray-400" />
+                      <a 
+                        href={`https://twitter.com/${artist.twitter.replace('@', '')}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-macs-blue-600 hover:text-macs-blue-700 transition-colors flex items-center"
+                      >
+                        {artist.twitter}
+                        <ExternalLink className="h-3 w-3 ml-1" />
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Booking Form Modal */}
+      {showBookingForm && artist && (
+        <BookingForm
+          artist={artist}
+          onClose={() => setShowBookingForm(false)}
+        />
+      )}
     </div>
   );
 };

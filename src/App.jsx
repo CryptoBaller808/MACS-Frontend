@@ -155,7 +155,7 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/discover" element={<Discover />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ArtistDashboard />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/artists/:username" element={<PublicArtistProfile />} />
             
