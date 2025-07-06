@@ -1,53 +1,21 @@
 import React, { useState } from 'react';
-import { 
-  X, 
-  Eye, 
-  EyeOff, 
-  Mail, 
-  Lock, 
-  User, 
-  Palette,
-  CheckCircle,
-  AlertCircle,
-  Loader2
-} from 'lucide-react';
-import { Button } from '@/components/ui/button.jsx';
-import { Input } from '@/components/ui/input.jsx';
-import { Label } from '@/components/ui/label.jsx';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx';
-import { Badge } from '@/components/ui/badge.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
+import { X, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
-const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
-  const [mode, setMode] = useState(initialMode); // 'login' or 'register'
-  const [showPassword, setShowPassword] = useState(false);
+const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }) => {
+  const { login, register } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    username: '',
     password: '',
     confirmPassword: '',
-    isArtist: false
+    name: '',
+    username: '',
+    agreeToTerms: false
   });
-  const [localError, setLocalError] = useState('');
-  const [localSuccess, setLocalSuccess] = useState('');
-
-  const { login, register, isLoading, error, clearError } = useAuth();
-
-  // Reset form when modal opens/closes or mode changes
-  React.useEffect(() => {
-    if (isOpen) {
-      setFormData({
-        email: '',
-        username: '',
-        password: '',
-        confirmPassword: '',
-        isArtist: false
-      });
-      setLocalError('');
-      setLocalSuccess('');
-      clearError();
-    }
-  }, [isOpen, mode, clearError]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -55,276 +23,273 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    // Clear errors when user starts typing
-    setLocalError('');
-    clearError();
-  };
-
-  const validateForm = () => {
-    if (!formData.email || !formData.password) {
-      setLocalError('Email and password are required');
-      return false;
-    }
-
-    if (mode === 'register') {
-      if (!formData.username) {
-        setLocalError('Username is required');
-        return false;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setLocalError('Passwords do not match');
-        return false;
-      }
-      if (formData.password.length < 6) {
-        setLocalError('Password must be at least 6 characters');
-        return false;
-      }
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setLocalError('Please enter a valid email address');
-      return false;
-    }
-
-    return true;
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+    setLoading(true);
+    setError('');
 
     try {
-      let result;
-      
       if (mode === 'login') {
-        result = await login({
-          email: formData.email,
-          password: formData.password
-        });
+        await login(formData.email, formData.password);
       } else {
-        result = await register({
+        // Validation for registration
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+        if (!formData.agreeToTerms) {
+          setError('Please agree to the terms and conditions');
+          setLoading(false);
+          return;
+        }
+        await register({
           email: formData.email,
-          username: formData.username,
           password: formData.password,
-          isArtist: formData.isArtist
+          name: formData.name,
+          username: formData.username
         });
       }
-
-      if (result.success) {
-        setLocalSuccess(mode === 'login' ? 'Login successful!' : 'Registration successful!');
-        setTimeout(() => {
-          onClose();
-        }, 1500);
-      } else {
-        setLocalError(result.error || `${mode === 'login' ? 'Login' : 'Registration'} failed`);
-      }
-    } catch (error) {
-      setLocalError(error.message || `${mode === 'login' ? 'Login' : 'Registration'} failed`);
+      onClose();
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const switchMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
-    setLocalError('');
-    setLocalSuccess('');
-    clearError();
   };
 
   if (!isOpen) return null;
 
-  const displayError = localError || error;
-
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl">
-        <CardHeader className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-2 top-2 h-8 w-8 p-0"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-          
-          <CardTitle className="text-2xl font-bold text-center">
-            {mode === 'login' ? 'Welcome Back' : 'Join MACS Platform'}
-          </CardTitle>
-          
-          <p className="text-center text-gray-600 dark:text-gray-400">
-            {mode === 'login' 
-              ? 'Sign in to your account to continue' 
-              : 'Create your account to get started'
-            }
-          </p>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          {/* Success Message */}
-          {localSuccess && (
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <span className="text-sm text-green-700 dark:text-green-300">{localSuccess}</span>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {displayError && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-              <span className="text-sm text-red-700 dark:text-red-300">{displayError}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="pl-10"
-                  disabled={isLoading}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Username Field (Register only) */}
-            {mode === 'register' && (
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="username"
-                    name="username"
-                    type="text"
-                    placeholder="Choose a username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="pl-10 pr-10"
-                  disabled={isLoading}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-1 top-1 h-8 w-8 p-0"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-            </div>
-
-            {/* Confirm Password Field (Register only) */}
-            {mode === 'register' && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Artist Toggle (Register only) */}
-            {mode === 'register' && (
-              <div className="flex items-center space-x-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="isArtist"
-                  name="isArtist"
-                  checked={formData.isArtist}
-                  onChange={handleInputChange}
-                  className="rounded border-gray-300"
-                  disabled={isLoading}
-                />
-                <Label htmlFor="isArtist" className="flex items-center gap-2 cursor-pointer">
-                  <Palette className="h-4 w-4 text-purple-600" />
-                  I'm an artist
-                  <Badge variant="secondary" className="text-xs">
-                    Creator Features
-                  </Badge>
-                </Label>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {mode === 'login' ? 'Signing In...' : 'Creating Account...'}
-                </>
-              ) : (
-                mode === 'login' ? 'Sign In' : 'Create Account'
-              )}
-            </Button>
-          </form>
-
-          {/* Mode Switch */}
-          <div className="text-center pt-4 border-t">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
-              <Button
-                variant="link"
-                className="p-0 ml-1 h-auto font-semibold"
-                onClick={switchMode}
-                disabled={isLoading}
-              >
-                {mode === 'login' ? 'Sign Up' : 'Sign In'}
-              </Button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-macs-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-macs-gray-200">
+          <div>
+            <h2 className="text-h3 text-macs-blue-600 font-gliker">
+              {mode === 'login' ? 'Welcome Back' : 'Join MACS'}
+            </h2>
+            <p className="text-sm text-macs-gray-600 mt-1">
+              {mode === 'login' 
+                ? 'Sign in to your account' 
+                : 'Create your artist account'
+              }
             </p>
           </div>
-        </CardContent>
-      </Card>
+          <button
+            onClick={onClose}
+            className="p-2 text-macs-gray-400 hover:text-macs-gray-600 hover:bg-macs-gray-100 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Registration Fields */}
+          {mode === 'register' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 transition-colors"
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 transition-colors"
+                  placeholder="Choose a unique username"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 transition-colors"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 pr-10 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 transition-colors"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-macs-gray-400 hover:text-macs-gray-600"
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Confirm Password (Registration only) */}
+          {mode === 'register' && (
+            <div>
+              <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 pr-10 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 transition-colors"
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-macs-gray-400 hover:text-macs-gray-600"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Terms Agreement (Registration only) */}
+          {mode === 'register' && (
+            <div className="flex items-start space-x-3">
+              <input
+                type="checkbox"
+                name="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onChange={handleInputChange}
+                className="mt-1 h-4 w-4 text-macs-blue-600 focus:ring-macs-blue-500 border-macs-gray-300 rounded"
+              />
+              <label className="text-sm text-macs-gray-700">
+                I agree to the{' '}
+                <a href="#" className="text-macs-blue-600 hover:text-macs-blue-700 underline">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="#" className="text-macs-blue-600 hover:text-macs-blue-700 underline">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn-primary flex items-center justify-center"
+          >
+            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {mode === 'login' ? 'Sign In' : 'Create Account'}
+          </button>
+
+          {/* Forgot Password (Login only) */}
+          {mode === 'login' && (
+            <div className="text-center">
+              <button
+                type="button"
+                className="text-sm text-macs-blue-600 hover:text-macs-blue-700 underline"
+              >
+                Forgot your password?
+              </button>
+            </div>
+          )}
+        </form>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-macs-gray-50 border-t border-macs-gray-200 rounded-b-xl">
+          <div className="text-center">
+            <p className="text-sm text-macs-gray-600">
+              {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
+              {' '}
+              <button
+                onClick={() => onSwitchMode(mode === 'login' ? 'register' : 'login')}
+                className="text-macs-blue-600 hover:text-macs-blue-700 font-medium underline"
+              >
+                {mode === 'login' ? 'Sign up' : 'Sign in'}
+              </button>
+            </p>
+          </div>
+
+          {/* Social Login Options */}
+          <div className="mt-4 space-y-3">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-macs-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-macs-gray-50 text-macs-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                className="w-full inline-flex justify-center py-2 px-4 border border-macs-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-macs-gray-500 hover:bg-macs-gray-50 transition-colors"
+              >
+                <span className="mr-2">🌐</span>
+                Wallet
+              </button>
+              <button
+                type="button"
+                className="w-full inline-flex justify-center py-2 px-4 border border-macs-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-macs-gray-500 hover:bg-macs-gray-50 transition-colors"
+              >
+                <span className="mr-2">📧</span>
+                Google
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

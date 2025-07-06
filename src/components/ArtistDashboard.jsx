@@ -1,345 +1,425 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  User, 
+  Settings, 
+  BarChart3, 
+  MessageCircle, 
+  Bell, 
+  Upload,
+  Eye,
+  Heart,
+  Users,
+  TrendingUp,
+  Edit,
+  Camera
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import apiService from '../services/apiService';
-import { Camera, Edit3, Save, X, MapPin, Palette, Star, Eye, Calendar, Upload } from 'lucide-react';
+import AvatarUpload from './AvatarUpload';
 
 const ArtistDashboard = () => {
-  const { user, updateUser } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [editForm, setEditForm] = useState({
-    displayName: '',
-    bio: '',
-    location: '',
-    craft: '',
-    website: '',
-    instagram: '',
-    twitter: '',
-    isArtist: true,
-    verificationLevel: 'pending'
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [profile, setProfile] = useState({
+    name: user?.name || 'Artist Name',
+    username: user?.username || 'artist_username',
+    bio: 'Digital artist passionate about creating meaningful connections through art.',
+    location: 'New York, USA',
+    website: 'https://artistportfolio.com',
+    instagram: '@artist_username',
+    twitter: '@artist_username',
+    specialties: ['Digital Art', 'Illustration', 'Concept Art'],
+    avatar: null,
+    verified: false
   });
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Load user profile on component mount
-  useEffect(() => {
-    loadProfile();
-  }, [user]);
+  const sidebarItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+    { id: 'messages', label: 'Messages', icon: MessageCircle },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
 
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      const response = await apiService.auth.getProfile();
-      if (response.success) {
-        setProfile(response.data);
-        setEditForm({
-          displayName: response.data.displayName || '',
-          bio: response.data.bio || '',
-          location: response.data.location || '',
-          craft: response.data.craft || '',
-          website: response.data.website || '',
-          instagram: response.data.instagram || '',
-          twitter: response.data.twitter || '',
-          isArtist: response.data.isArtist || true,
-          verificationLevel: response.data.verificationLevel || 'pending'
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load profile:', error);
-    } finally {
-      setLoading(false);
-    }
+  const stats = [
+    { label: 'Profile Views', value: '12,847', change: '+12%', icon: Eye, color: 'text-macs-blue-600' },
+    { label: 'Artwork Likes', value: '3,429', change: '+8%', icon: Heart, color: 'text-red-500' },
+    { label: 'Followers', value: '1,256', change: '+15%', icon: Users, color: 'text-macs-amber-600' },
+    { label: 'Monthly Views', value: '45,123', change: '+22%', icon: TrendingUp, color: 'text-green-600' },
+  ];
+
+  const recentArtworks = [
+    { id: 1, title: 'Digital Dreams', likes: 234, views: 1200, status: 'Published' },
+    { id: 2, title: 'Abstract Thoughts', likes: 189, views: 890, status: 'Published' },
+    { id: 3, title: 'Color Symphony', likes: 156, views: 670, status: 'Draft' },
+    { id: 4, title: 'Urban Landscapes', likes: 298, views: 1450, status: 'Published' },
+  ];
+
+  const handleProfileUpdate = (field, value) => {
+    setProfile(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveProfile = async () => {
-    try {
-      setSaving(true);
-      const response = await apiService.auth.updateProfile(editForm);
-      
-      if (response.success) {
-        setProfile(response.data);
-        setIsEditing(false);
-        
-        // Show success notification
-        if (window.showNotification) {
-          window.showNotification('Profile updated successfully!', 'success');
-        }
-        
-        // Update user context
-        updateUser(response.data);
-      }
-    } catch (error) {
-      console.error('Failed to save profile:', error);
-      if (window.showNotification) {
-        window.showNotification('Failed to update profile. Please try again.', 'error');
-      }
-    } finally {
-      setSaving(false);
-    }
+  const handleSaveProfile = () => {
+    // Here you would typically save to backend
+    console.log('Saving profile:', profile);
+    setIsEditing(false);
   };
 
-  const handleAvatarUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      setUploadingAvatar(true);
-      
-      // Mock avatar upload - in real implementation, upload to S3 or similar
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const avatarUrl = e.target.result;
-        setProfile(prev => ({ ...prev, avatar: avatarUrl }));
-        setEditForm(prev => ({ ...prev, avatar: avatarUrl }));
-        
-        if (window.showNotification) {
-          window.showNotification('Avatar uploaded successfully!', 'success');
-        }
-      };
-      reader.readAsDataURL(file);
-      
-    } catch (error) {
-      console.error('Failed to upload avatar:', error);
-      if (window.showNotification) {
-        window.showNotification('Failed to upload avatar. Please try again.', 'error');
-      }
-    } finally {
-      setUploadingAvatar(false);
-    }
+  const handleAvatarUpdate = (avatarUrl) => {
+    setProfile(prev => ({ ...prev, avatar: avatarUrl }));
   };
 
-  const getVerificationBadge = (level) => {
-    const badges = {
-      pending: { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' },
-      verified: { color: 'bg-green-100 text-green-800', text: 'Verified' },
-      featured: { color: 'bg-purple-100 text-purple-800', text: 'Featured' }
-    };
-    return badges[level] || badges.pending;
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+  const renderDashboard = () => (
+    <div className="space-y-8">
+      {/* Welcome Section */}
+      <div className="card-macs p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-h2 text-macs-blue-600 mb-2">
+              Welcome back, {profile.name}! 👋
+            </h1>
+            <p className="text-body text-macs-gray-600">
+              Here's what's happening with your art today.
+            </p>
+          </div>
+          <Link to={`/artists/${profile.username}`} className="btn-outline">
+            View Public Profile
+          </Link>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="card-macs p-6">
+              <div className="flex items-center justify-between mb-4">
+                <Icon className={`h-8 w-8 ${stat.color}`} />
+                <span className="text-sm font-medium text-green-600">{stat.change}</span>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-macs-gray-900 mb-1">{stat.value}</p>
+                <p className="text-sm text-macs-gray-600">{stat.label}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Artworks */}
+        <div className="card-macs p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Artist Dashboard</h1>
-            <div className="flex items-center space-x-4">
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Edit Profile
+            <h3 className="text-h4 text-macs-gray-900">Recent Artworks</h3>
+            <button className="btn-primary text-sm">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload New
+            </button>
+          </div>
+          <div className="space-y-4">
+            {recentArtworks.map((artwork) => (
+              <div key={artwork.id} className="flex items-center justify-between p-4 bg-macs-gray-50 rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-macs-blue-100 rounded-lg flex items-center justify-center">
+                    <span className="text-xl">🎨</span>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-macs-gray-900">{artwork.title}</h4>
+                    <div className="flex items-center space-x-4 text-sm text-macs-gray-600">
+                      <span>{artwork.likes} likes</span>
+                      <span>{artwork.views} views</span>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        artwork.status === 'Published' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {artwork.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button className="btn-ghost text-sm">
+                  <Edit className="h-4 w-4" />
                 </button>
-              ) : (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleSaveProfile}
-                    disabled={saving}
-                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Profile Section */}
-          <div className="flex items-start space-x-6">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-                {profile?.avatar ? (
-                  <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  (profile?.displayName || user?.username || 'A').charAt(0).toUpperCase()
-                )}
               </div>
-              {isEditing && (
-                <label className="absolute -bottom-2 -right-2 bg-purple-600 text-white p-2 rounded-full cursor-pointer hover:bg-purple-700 transition-colors">
-                  <Camera className="w-4 h-4" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    disabled={uploadingAvatar}
-                  />
-                </label>
-              )}
-              {uploadingAvatar && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
-              )}
-            </div>
-
-            {/* Profile Info */}
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={editForm.displayName}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, displayName: e.target.value }))}
-                    placeholder="Display Name"
-                    className="text-2xl font-bold text-gray-900 bg-transparent border-b-2 border-purple-300 focus:border-purple-600 outline-none"
-                  />
-                ) : (
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {profile?.displayName || user?.username || 'Artist'}
-                  </h2>
-                )}
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getVerificationBadge(profile?.verificationLevel).color}`}>
-                  {getVerificationBadge(profile?.verificationLevel).text}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {/* Location */}
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editForm.location}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Location"
-                      className="flex-1 bg-transparent border-b border-gray-300 focus:border-purple-600 outline-none"
-                    />
-                  ) : (
-                    <span className="text-gray-600">{profile?.location || 'Location not set'}</span>
-                  )}
-                </div>
-
-                {/* Craft */}
-                <div className="flex items-center space-x-2">
-                  <Palette className="w-4 h-4 text-gray-500" />
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editForm.craft}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, craft: e.target.value }))}
-                      placeholder="Craft/Specialty"
-                      className="flex-1 bg-transparent border-b border-gray-300 focus:border-purple-600 outline-none"
-                    />
-                  ) : (
-                    <span className="text-gray-600">{profile?.craft || 'Craft not set'}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bio Section */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">About</h3>
-          {isEditing ? (
-            <textarea
-              value={editForm.bio}
-              onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="Tell the world about your artistic journey..."
-              rows={4}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:border-purple-600 outline-none resize-none"
-            />
-          ) : (
-            <p className="text-gray-600 leading-relaxed">
-              {profile?.bio || 'No bio available. Click "Edit Profile" to add your story.'}
-            </p>
-          )}
-        </div>
-
-        {/* Social Links */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Social Links</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-              {isEditing ? (
-                <input
-                  type="url"
-                  value={editForm.website}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, website: e.target.value }))}
-                  placeholder="https://yourwebsite.com"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:border-purple-600 outline-none"
-                />
-              ) : (
-                <p className="text-gray-600">{profile?.website || 'Not set'}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editForm.instagram}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, instagram: e.target.value }))}
-                  placeholder="@username"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:border-purple-600 outline-none"
-                />
-              ) : (
-                <p className="text-gray-600">{profile?.instagram || 'Not set'}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Twitter</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editForm.twitter}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, twitter: e.target.value }))}
-                  placeholder="@username"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:border-purple-600 outline-none"
-                />
-              ) : (
-                <p className="text-gray-600">{profile?.twitter || 'Not set'}</p>
-              )}
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 transition-colors">
-              <Upload className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">Upload Artwork</span>
+        <div className="card-macs p-6">
+          <h3 className="text-h4 text-macs-gray-900 mb-6">Quick Actions</h3>
+          <div className="space-y-4">
+            <button className="w-full btn-primary justify-start">
+              <Upload className="h-5 w-5 mr-3" />
+              Upload New Artwork
             </button>
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 transition-colors">
-              <Calendar className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">Manage Bookings</span>
+            <button className="w-full btn-secondary justify-start">
+              <Edit className="h-5 w-5 mr-3" />
+              Edit Profile
             </button>
-            <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 transition-colors">
-              <Eye className="w-6 h-6 text-gray-400 mr-2" />
-              <span className="text-gray-600">View Public Profile</span>
+            <button className="w-full btn-outline justify-start">
+              <BarChart3 className="h-5 w-5 mr-3" />
+              View Analytics
+            </button>
+            <button className="w-full btn-ghost justify-start">
+              <MessageCircle className="h-5 w-5 mr-3" />
+              Check Messages
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+
+  const renderProfile = () => (
+    <div className="space-y-8">
+      <div className="card-macs p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-h3 text-macs-blue-600">Artist Profile</h2>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className={isEditing ? 'btn-secondary' : 'btn-primary'}
+          >
+            {isEditing ? 'Cancel' : 'Edit Profile'}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Avatar Section */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <AvatarUpload
+                currentAvatar={profile.avatar}
+                onAvatarUpdate={handleAvatarUpdate}
+                disabled={!isEditing}
+              />
+              <div className="mt-4">
+                <h3 className="font-semibold text-macs-gray-900">{profile.name}</h3>
+                <p className="text-macs-gray-600">@{profile.username}</p>
+                {profile.verified && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 mt-2">
+                    ✓ Verified Artist
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="bg-macs-gray-50 rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <p className="text-lg font-bold text-macs-blue-600">1,256</p>
+                  <p className="text-xs text-macs-gray-600">Followers</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-macs-blue-600">89</p>
+                  <p className="text-xs text-macs-gray-600">Artworks</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-macs-blue-600">4.9</p>
+                  <p className="text-xs text-macs-gray-600">Rating</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-macs-blue-600">24h</p>
+                  <p className="text-xs text-macs-gray-600">Response</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Profile Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={profile.name}
+                  onChange={(e) => handleProfileUpdate('name', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={profile.username}
+                  onChange={(e) => handleProfileUpdate('username', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                Bio
+              </label>
+              <textarea
+                value={profile.bio}
+                onChange={(e) => handleProfileUpdate('bio', e.target.value)}
+                disabled={!isEditing}
+                rows={4}
+                className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={profile.location}
+                  onChange={(e) => handleProfileUpdate('location', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={profile.website}
+                  onChange={(e) => handleProfileUpdate('website', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Instagram
+                </label>
+                <input
+                  type="text"
+                  value={profile.instagram}
+                  onChange={(e) => handleProfileUpdate('instagram', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-macs-gray-700 mb-2">
+                  Twitter
+                </label>
+                <input
+                  type="text"
+                  value={profile.twitter}
+                  onChange={(e) => handleProfileUpdate('twitter', e.target.value)}
+                  disabled={!isEditing}
+                  className="w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:ring-2 focus:ring-macs-blue-500 focus:border-macs-blue-500 disabled:bg-macs-gray-50"
+                />
+              </div>
+            </div>
+
+            {isEditing && (
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="btn-ghost"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  className="btn-primary"
+                >
+                  Save Changes
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return renderDashboard();
+      case 'profile':
+        return renderProfile();
+      case 'analytics':
+        return (
+          <div className="card-macs p-6">
+            <h2 className="text-h3 text-macs-blue-600 mb-4">Analytics</h2>
+            <p className="text-macs-gray-600">Detailed analytics coming soon...</p>
+          </div>
+        );
+      case 'messages':
+        return (
+          <div className="card-macs p-6">
+            <h2 className="text-h3 text-macs-blue-600 mb-4">Messages</h2>
+            <p className="text-macs-gray-600">Message system coming soon...</p>
+          </div>
+        );
+      case 'notifications':
+        return (
+          <div className="card-macs p-6">
+            <h2 className="text-h3 text-macs-blue-600 mb-4">Notifications</h2>
+            <p className="text-macs-gray-600">Notification center coming soon...</p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="card-macs p-6">
+            <h2 className="text-h3 text-macs-blue-600 mb-4">Settings</h2>
+            <p className="text-macs-gray-600">Account settings coming soon...</p>
+          </div>
+        );
+      default:
+        return renderDashboard();
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-macs-gray-50">
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r border-macs-gray-200">
+        <div className="p-6">
+          <h2 className="text-h4 text-macs-blue-600 mb-6">Artist Dashboard</h2>
+          <nav className="space-y-2">
+            {sidebarItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                    activeTab === item.id
+                      ? 'bg-macs-blue-600 text-white'
+                      : 'text-macs-gray-600 hover:bg-macs-blue-50 hover:text-macs-blue-600'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-8">
+        {renderContent()}
       </div>
     </div>
   );

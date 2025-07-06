@@ -1,59 +1,50 @@
-/**
- * MACS Platform API Service
- * Handles all communication with the backend API
- */
+const API_BASE_URL = 'https://macs-backend-api.onrender.com/api/v1';
 
-// Backend API configuration
+// API Configuration
 const API_CONFIG = {
-  BASE_URL: 'https://macs-backend-api.onrender.com',
-  API_VERSION: '/api/v1',
   TIMEOUT: 30000, // 30 seconds
   RETRY_ATTEMPTS: 3,
-  RETRY_DELAY: 1000 // 1 second
+  RETRY_DELAY: 1000, // 1 second
 };
 
-// Get full API URL
-const getApiUrl = (endpoint) => {
-  return `${API_CONFIG.BASE_URL}${API_CONFIG.API_VERSION}${endpoint}`;
-};
-
-// Get auth token from localStorage
+// Helper function to get auth token
 const getAuthToken = () => {
-  return localStorage.getItem('macs_auth_token');
+  return localStorage.getItem('macs_token');
 };
 
-// Set auth token in localStorage
-const setAuthToken = (token) => {
-  if (token) {
-    localStorage.setItem('macs_auth_token', token);
-  } else {
-    localStorage.removeItem('macs_auth_token');
-  }
-};
-
-// Get auth headers
+// Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = getAuthToken();
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` }),
+  };
+};
+
+// Helper function to build API URL
+const getApiUrl = (endpoint) => {
+  return `${API_BASE_URL}${endpoint}`;
 };
 
 // Generic API request function with retry logic
 const apiRequest = async (endpoint, options = {}) => {
   const url = getApiUrl(endpoint);
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    ...getAuthHeaders(),
+  const defaultOptions = {
+    headers: getAuthHeaders(),
   };
 
   const requestOptions = {
-    method: 'GET',
-    headers: { ...defaultHeaders, ...options.headers },
+    ...defaultOptions,
     ...options,
+    headers: {
+      ...defaultOptions.headers,
+      ...options.headers,
+    },
   };
 
-  // Add body for non-GET requests
-  if (options.body && typeof options.body === 'object') {
-    requestOptions.body = JSON.stringify(options.body);
+  // Convert body to JSON if it's an object
+  if (requestOptions.body && typeof requestOptions.body === 'object') {
+    requestOptions.body = JSON.stringify(requestOptions.body);
   }
 
   let lastError;
@@ -97,56 +88,42 @@ const apiRequest = async (endpoint, options = {}) => {
   throw lastError;
 };
 
-// API Service object
+// API Service Object
 const apiService = {
-  // Health check
-  async checkHealth() {
-    try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}/health`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      return response.ok;
-    } catch (error) {
-      console.error('Health check failed:', error);
-      return false;
-    }
-  },
-
   // Authentication endpoints
   auth: {
+    async login(email, password) {
+      return await apiRequest('/auth/login', {
+        method: 'POST',
+        body: { email, password },
+      });
+    },
+
     async register(userData) {
-      const response = await apiRequest('/auth/register', {
+      return await apiRequest('/auth/register', {
         method: 'POST',
         body: userData,
       });
-      
-      if (response.success && response.data.token) {
-        setAuthToken(response.data.token);
-      }
-      
-      return response;
-    },
-
-    async login(credentials) {
-      const response = await apiRequest('/auth/login', {
-        method: 'POST',
-        body: credentials,
-      });
-      
-      if (response.success && response.data.token) {
-        setAuthToken(response.data.token);
-      }
-      
-      return response;
     },
 
     async logout() {
-      setAuthToken(null);
-      return { success: true };
+      return await apiRequest('/auth/logout', {
+        method: 'POST',
+      });
     },
 
-    async getProfile() {
+    async verify() {
+      return await apiRequest('/auth/verify');
+    },
+
+    async resetPassword(email) {
+      return await apiRequest('/auth/reset-password', {
+        method: 'POST',
+        body: { email },
+      });
+    },
+
+    async getCurrentUser() {
       return await apiRequest('/auth/me');
     },
 
@@ -196,6 +173,26 @@ const apiService = {
       return await apiRequest(`/profiles/${profileId}`);
     },
 
+    async getPublicProfile(profileId) {
+      // Public profile endpoint that doesn't require authentication
+      try {
+        const url = getApiUrl(`/profiles/public/${profileId}`);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('Failed to fetch public profile:', error);
+        throw error;
+      }
+    },
+
     async createProfile(profileData) {
       return await apiRequest('/profiles', {
         method: 'POST',
@@ -214,6 +211,51 @@ const apiService = {
       return await apiRequest(`/profiles/${profileId}`, {
         method: 'DELETE',
       });
+    },
+
+    // Upload profile avatar
+    async uploadAvatar(file) {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      const url = getApiUrl('/profiles/avatar');
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+        },
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    },
+
+    // Get artist gallery/artworks
+    async getArtistGallery(artistId) {
+      return await apiRequest(`/profiles/${artistId}/gallery`);
+    },
+
+    // Follow/unfollow artist
+    async followArtist(artistId) {
+      return await apiRequest(`/profiles/${artistId}/follow`, {
+        method: 'POST',
+      });
+    },
+
+    async unfollowArtist(artistId) {
+      return await apiRequest(`/profiles/${artistId}/unfollow`, {
+        method: 'POST',
+      });
+    },
+
+    // Get follow status
+    async getFollowStatus(artistId) {
+      return await apiRequest(`/profiles/${artistId}/follow-status`);
     }
   },
 
@@ -257,13 +299,41 @@ const apiService = {
         method: 'PUT',
         body: bookingData,
       });
+    },
+
+    async deleteBooking(bookingId) {
+      return await apiRequest(`/booking/${bookingId}`, {
+        method: 'DELETE',
+      });
     }
   },
 
-  // Crowdfunding platform
+  // Bridge functionality
+  bridge: {
+    async getBridgeInfo() {
+      return await apiRequest('/bridge');
+    },
+
+    async initiateBridge(bridgeData) {
+      return await apiRequest('/bridge/initiate', {
+        method: 'POST',
+        body: bridgeData,
+      });
+    },
+
+    async getBridgeStatus(transactionId) {
+      return await apiRequest(`/bridge/status/${transactionId}`);
+    }
+  },
+
+  // Crowdfunding
   crowdfunding: {
     async getCampaigns() {
       return await apiRequest('/crowdfunding');
+    },
+
+    async getCampaign(campaignId) {
+      return await apiRequest(`/crowdfunding/${campaignId}`);
     },
 
     async createCampaign(campaignData) {
@@ -273,43 +343,82 @@ const apiService = {
       });
     },
 
-    async getCampaign(campaignId) {
-      return await apiRequest(`/crowdfunding/${campaignId}`);
+    async updateCampaign(campaignId, campaignData) {
+      return await apiRequest(`/crowdfunding/${campaignId}`, {
+        method: 'PUT',
+        body: campaignData,
+      });
     },
 
-    async fundCampaign(campaignId, amount) {
-      return await apiRequest(`/crowdfunding/${campaignId}/fund`, {
+    async deleteCampaign(campaignId) {
+      return await apiRequest(`/crowdfunding/${campaignId}`, {
+        method: 'DELETE',
+      });
+    },
+
+    async contributeToCampaign(campaignId, contributionData) {
+      return await apiRequest(`/crowdfunding/${campaignId}/contribute`, {
         method: 'POST',
-        body: { amount },
+        body: contributionData,
       });
     }
   },
 
-  // Cross-chain bridge
-  bridge: {
-    async getBridgeInfo() {
-      return await apiRequest('/bridge');
+  // Utility functions
+  utils: {
+    // Health check
+    async healthCheck() {
+      try {
+        const response = await fetch(getApiUrl('/health'), {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
     },
 
-    async initiateBridge(bridgeData) {
-      return await apiRequest('/bridge/transfer', {
+    // Get API status
+    async getApiStatus() {
+      try {
+        const response = await fetch(getApiUrl('/status'), {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (response.ok) {
+          return await response.json();
+        }
+        return { status: 'error', message: 'API not responding' };
+      } catch (error) {
+        return { status: 'error', message: error.message };
+      }
+    },
+
+    // Upload file (generic)
+    async uploadFile(file, endpoint = '/upload') {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const url = getApiUrl(endpoint);
+      const response = await fetch(url, {
         method: 'POST',
-        body: bridgeData,
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`,
+        },
+        body: formData,
       });
-    },
-
-    async getBridgeStatus(transactionId) {
-      return await apiRequest(`/bridge/status/${transactionId}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return await response.json();
     }
   }
 };
 
-// Export the service
 export default apiService;
-
-// Export individual modules for convenience
-export const { auth, users, profiles, wallet, booking, crowdfunding, bridge } = apiService;
-
-// Export utility functions
-export { getAuthToken, setAuthToken, getApiUrl };
 
