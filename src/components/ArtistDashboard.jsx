@@ -21,8 +21,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import AvatarUpload from './AvatarUpload';
-import CalendarComponent from './Calendar';
-import BookingManager from './BookingManager';
+import AvailabilityCalendar from './AvailabilityCalendar';
+import BookingManagement from './BookingManagement';
 import NotificationSystem from './NotificationSystem';
 import MediaGallery from './MediaGallery';
 
@@ -449,25 +449,13 @@ const ArtistDashboard = () => {
       case 'calendar':
         return (
           <div className="space-y-6">
-            <div className="card-macs p-6">
-              <h2 className="text-h3 text-macs-blue-600 mb-4">Calendar & Availability</h2>
-              <p className="text-macs-gray-600 mb-6">
-                Manage your availability and view upcoming bookings.
-              </p>
-              <CalendarComponent artistId={user?.id} />
-            </div>
+            <AvailabilityCalendar />
           </div>
         );
       case 'bookings':
         return (
           <div className="space-y-6">
-            <div className="card-macs p-6">
-              <h2 className="text-h3 text-macs-blue-600 mb-4">Booking Management</h2>
-              <p className="text-macs-gray-600 mb-6">
-                Manage your booking requests, services, and pricing.
-              </p>
-              <BookingManager artistId={user?.id} />
-            </div>
+            <BookingManagement />
           </div>
         );
       case 'analytics':

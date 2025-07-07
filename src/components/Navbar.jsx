@@ -12,6 +12,7 @@ const Navbar = ({ onAuthClick }) => {
     { name: 'Feed', path: '/', icon: '📊' },
     { name: 'Marketplace', path: '/marketplace', icon: '🛒' },
     { name: 'Discover', path: '/discover', icon: '🔍' },
+    { name: 'My Bookings', path: '/my-bookings', icon: '📅' },
     { name: 'Profile', path: '/profile', icon: '👤' },
     { name: 'Wallet', path: '/wallet', icon: '💰' },
   ];
@@ -67,7 +68,7 @@ const Navbar = ({ onAuthClick }) => {
               </div>
               <input
                 type="text"
-                placeholder="Search with disoulting"
+                placeholder="Search artists, artwork, services..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="block w-full pl-10 pr-3 py-2 border border-macs-gray-300 rounded-lg leading-5 bg-white placeholder-macs-gray-500 focus:outline-none focus:placeholder-macs-gray-400 focus:ring-1 focus:ring-macs-blue-500 focus:border-macs-blue-500 text-sm"

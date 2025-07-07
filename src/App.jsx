@@ -7,6 +7,7 @@ import ArtistDashboard from './components/ArtistDashboard';
 import PublicArtistProfile from './components/PublicArtistProfile';
 import AuthModal from './components/AuthModal';
 import Sidebar from './components/Sidebar';
+import ClientBookingHistory from './components/ClientBookingHistory';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -96,6 +97,13 @@ const Wallet = () => (
   </div>
 );
 
+// My Bookings page for clients
+const MyBookings = () => (
+  <div className="p-8">
+    <ClientBookingHistory clientEmail="user@example.com" />
+  </div>
+);
+
 const Settings = () => (
   <div className="p-8">
     <h1 className="text-h1 text-macs-blue-600 mb-4">Settings</h1>
@@ -157,6 +165,7 @@ function AppContent() {
             <Route path="/discover" element={<Discover />} />
             <Route path="/profile" element={<ArtistDashboard />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="/artists/:username" element={<PublicArtistProfile />} />
             
             {/* Protected Routes */}
