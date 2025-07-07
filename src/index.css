@@ -1,286 +1,268 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Gliker:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gliker:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* Original MACS Theme Colors */
-    --background: 249 250 251; /* macs-gray-50 */
-    --foreground: 17 24 39; /* macs-gray-900 */
-    --card: 255 255 255;
-    --card-foreground: 17 24 39;
-    --popover: 255 255 255;
-    --popover-foreground: 17 24 39;
-    --primary: 30 64 175; /* macs-blue-600 */
-    --primary-foreground: 255 255 255;
-    --secondary: 243 244 246; /* macs-gray-100 */
-    --secondary-foreground: 17 24 39;
-    --muted: 243 244 246;
-    --muted-foreground: 107 114 128; /* macs-gray-500 */
-    --accent: 245 158 11; /* macs-amber-500 */
-    --accent-foreground: 255 255 255;
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-    --border: 229 231 235; /* macs-gray-200 */
-    --input: 229 231 235;
-    --ring: 30 64 175; /* macs-blue-600 */
-    --radius: 0.5rem;
-    
-    /* Sidebar colors */
-    --sidebar: 255 255 255;
-    --sidebar-foreground: 17 24 39;
-    --sidebar-primary: 30 64 175;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 245 158 11;
-    --sidebar-accent-foreground: 255 255 255;
-    --sidebar-border: 229 231 235;
-    --sidebar-ring: 30 64 175;
-    
-    /* Chart colors with MACS theme */
-    --chart-1: 30 64 175; /* macs-blue-600 */
-    --chart-2: 245 158 11; /* macs-amber-500 */
-    --chart-3: 249 115 22; /* macs-orange-500 */
-    --chart-4: 107 114 128; /* macs-gray-500 */
-    --chart-5: 75 85 99; /* macs-gray-600 */
-  }
+/* CSS Variables for MACS Design System */
+:root {
+  /* MACS Teal Colors */
+  --macs-teal-50: #f0fdfa;
+  --macs-teal-100: #ccfbf1;
+  --macs-teal-200: #99f6e4;
+  --macs-teal-300: #5eead4;
+  --macs-teal-400: #2dd4bf;
+  --macs-teal-500: #14b8a6;
+  --macs-teal-600: #0d9488;
+  --macs-teal-700: #0f766e;
+  --macs-teal-800: #115e59;
+  --macs-teal-900: #134e4a;
 
-  .dark {
-    --background: 17 24 39; /* macs-gray-900 */
-    --foreground: 249 250 251; /* macs-gray-50 */
-    --card: 31 41 55; /* macs-gray-800 */
-    --card-foreground: 249 250 251;
-    --popover: 31 41 55;
-    --popover-foreground: 249 250 251;
-    --primary: 59 130 246; /* macs-blue-500 */
-    --primary-foreground: 255 255 255;
-    --secondary: 31 41 55;
-    --secondary-foreground: 249 250 251;
-    --muted: 31 41 55;
-    --muted-foreground: 156 163 175; /* macs-gray-400 */
-    --accent: 245 158 11; /* macs-amber-500 */
-    --accent-foreground: 255 255 255;
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-    --border: 75 85 99; /* macs-gray-600 */
-    --input: 75 85 99;
-    --ring: 59 130 246; /* macs-blue-500 */
-    
-    /* Dark sidebar colors */
-    --sidebar: 31 41 55;
-    --sidebar-foreground: 249 250 251;
-    --sidebar-primary: 59 130 246;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 245 158 11;
-    --sidebar-accent-foreground: 255 255 255;
-    --sidebar-border: 75 85 99;
-    --sidebar-ring: 59 130 246;
-  }
+  /* MACS Amber Colors */
+  --macs-amber-50: #fffbeb;
+  --macs-amber-100: #fef3c7;
+  --macs-amber-200: #fde68a;
+  --macs-amber-300: #fcd34d;
+  --macs-amber-400: #fbbf24;
+  --macs-amber-500: #f59e0b;
+  --macs-amber-600: #d97706;
+  --macs-amber-700: #b45309;
+  --macs-amber-800: #92400e;
+  --macs-amber-900: #78350f;
+
+  /* MACS Earth Tones */
+  --macs-brown-50: #fdf8f6;
+  --macs-brown-100: #f2e8e5;
+  --macs-brown-200: #eaddd7;
+  --macs-brown-300: #e0cfc5;
+  --macs-brown-400: #d2bab0;
+  --macs-brown-500: #bfa094;
+  --macs-brown-600: #a18072;
+  --macs-brown-700: #8b6f47;
+  --macs-brown-800: #6f4e37;
+  --macs-brown-900: #5d4037;
+
+  /* MACS Gray Colors */
+  --macs-gray-50: #f9fafb;
+  --macs-gray-100: #f3f4f6;
+  --macs-gray-200: #e5e7eb;
+  --macs-gray-300: #d1d5db;
+  --macs-gray-400: #9ca3af;
+  --macs-gray-500: #6b7280;
+  --macs-gray-600: #4b5563;
+  --macs-gray-700: #374151;
+  --macs-gray-800: #1f2937;
+  --macs-gray-900: #111827;
+
+  /* Primary Colors */
+  --primary: var(--macs-teal-600);
+  --primary-foreground: white;
+  --secondary: var(--macs-amber-500);
+  --secondary-foreground: var(--macs-gray-900);
+  --accent: var(--macs-brown-500);
+  --accent-foreground: white;
   
-  * {
-    @apply border-border;
-  }
+  /* Background Colors */
+  --background: var(--macs-gray-50);
+  --foreground: var(--macs-gray-900);
+  --card: white;
+  --card-foreground: var(--macs-gray-900);
   
-  body {
-    @apply bg-background text-foreground font-body;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+  /* Border Colors */
+  --border: var(--macs-gray-200);
+  --input: var(--macs-gray-200);
+  --ring: var(--macs-teal-500);
   
-  /* Typography Classes */
-  .text-display {
-    @apply text-6xl font-heading font-extrabold tracking-tight;
+  /* State Colors */
+  --destructive: #ef4444;
+  --destructive-foreground: white;
+  --muted: var(--macs-gray-100);
+  --muted-foreground: var(--macs-gray-500);
+}
+
+/* Base Styles */
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Gliker', 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+/* Typography Classes */
+.font-gliker {
+  font-family: 'Gliker', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.text-h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-gliker;
+}
+
+.text-h2 {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight font-gliker;
+}
+
+.text-h3 {
+  @apply text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight font-gliker;
+}
+
+.text-h4 {
+  @apply text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight font-gliker;
+}
+
+.text-h5 {
+  @apply text-lg md:text-xl lg:text-2xl font-semibold tracking-tight font-gliker;
+}
+
+.text-h6 {
+  @apply text-base md:text-lg lg:text-xl font-semibold tracking-tight font-gliker;
+}
+
+/* Component Classes */
+.btn-primary {
+  @apply bg-macs-teal-600 hover:bg-macs-teal-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-macs-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-gliker;
+}
+
+.btn-secondary {
+  @apply bg-macs-amber-500 hover:bg-macs-amber-600 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-macs-amber-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-gliker;
+}
+
+.btn-outline {
+  @apply border border-macs-teal-600 text-macs-teal-600 hover:bg-macs-teal-600 hover:text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-macs-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-gliker;
+}
+
+.btn-ghost {
+  @apply text-macs-gray-600 hover:text-macs-gray-900 hover:bg-macs-gray-100 font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-macs-gray-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-gliker;
+}
+
+.card-macs {
+  @apply bg-white rounded-xl shadow-sm border border-macs-gray-200 overflow-hidden;
+}
+
+.input-macs {
+  @apply w-full px-3 py-2 border border-macs-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-macs-teal-500 focus:border-transparent transition-colors duration-200 disabled:bg-macs-gray-100 disabled:cursor-not-allowed font-gliker;
+}
+
+.badge-macs {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-gliker;
+}
+
+.badge-success {
+  @apply badge-macs bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply badge-macs bg-macs-amber-100 text-macs-amber-800;
+}
+
+.badge-error {
+  @apply badge-macs bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply badge-macs bg-macs-teal-100 text-macs-teal-800;
+}
+
+.badge-neutral {
+  @apply badge-macs bg-macs-gray-100 text-macs-gray-800;
+}
+
+/* Status Badge Variants */
+.status-pending {
+  @apply bg-macs-amber-100 text-macs-amber-800 border border-macs-amber-200;
+}
+
+.status-confirmed {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.status-completed {
+  @apply bg-macs-teal-100 text-macs-teal-800 border border-macs-teal-200;
+}
+
+.status-declined {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+.status-cancelled {
+  @apply bg-macs-gray-100 text-macs-gray-800 border border-macs-gray-200;
+}
+
+/* Calendar Styles */
+.calendar-day {
+  @apply w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer font-gliker;
+}
+
+.calendar-day-available {
+  @apply calendar-day bg-macs-teal-100 text-macs-teal-800 hover:bg-macs-teal-200;
+}
+
+.calendar-day-partial {
+  @apply calendar-day bg-macs-amber-100 text-macs-amber-800 hover:bg-macs-amber-200;
+}
+
+.calendar-day-booked {
+  @apply calendar-day bg-red-100 text-red-800 hover:bg-red-200;
+}
+
+.calendar-day-unavailable {
+  @apply calendar-day bg-macs-gray-100 text-macs-gray-500 cursor-not-allowed;
+}
+
+.calendar-day-selected {
+  @apply ring-2 ring-macs-teal-500 ring-offset-2;
+}
+
+.calendar-day-today {
+  @apply font-bold ring-1 ring-macs-gray-400;
+}
+
+/* Spinner Animation */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-macs-gray-300 border-t-macs-teal-600;
+}
+
+/* Utility Classes */
+.text-gradient {
+  @apply bg-gradient-to-r from-macs-teal-600 to-macs-amber-500 bg-clip-text text-transparent;
+}
+
+.bg-gradient-macs {
+  @apply bg-gradient-to-r from-macs-teal-50 to-macs-amber-50;
+}
+
+.shadow-macs {
+  @apply shadow-lg shadow-macs-teal-500/10;
+}
+
+/* Focus Styles */
+.focus-macs {
+  @apply focus:outline-none focus:ring-2 focus:ring-macs-teal-500 focus:ring-offset-2;
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  .text-h1 { 
+    font-size: 2rem;
+    line-height: 2.5rem;
   }
-  
-  .text-h1 {
-    @apply text-5xl font-heading font-bold tracking-tight;
+  .text-h2 { 
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
-  
-  .text-h2 {
-    @apply text-4xl font-heading font-semibold tracking-tight;
+  .text-h3 { 
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
-  
-  .text-h3 {
-    @apply text-3xl font-heading font-semibold tracking-tight;
-  }
-  
-  .text-h4 {
-    @apply text-2xl font-heading font-medium tracking-tight;
-  }
-  
-  .text-body-lg {
-    @apply text-lg font-body leading-relaxed;
-  }
-  
-  .text-body {
-    @apply text-base font-body leading-relaxed;
-  }
-  
-  .text-body-sm {
-    @apply text-sm font-body leading-relaxed;
-  }
-  
-  .text-caption {
-    @apply text-xs font-body font-medium uppercase tracking-wide;
-  }
-  
-  /* Button Classes */
-  .btn-primary {
-    @apply bg-macs-blue-600 hover:bg-macs-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
-  }
-  
-  .btn-secondary {
-    @apply bg-macs-amber-500 hover:bg-macs-amber-600 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
-  }
-  
-  .btn-accent {
-    @apply bg-macs-orange-500 hover:bg-macs-orange-600 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
-  }
-  
-  .btn-outline {
-    @apply border-2 border-macs-blue-600 text-macs-blue-600 hover:bg-macs-blue-600 hover:text-white font-medium px-6 py-3 rounded-lg transition-all duration-200;
-  }
-  
-  .btn-ghost {
-    @apply text-macs-blue-600 hover:bg-macs-blue-50 font-medium px-6 py-3 rounded-lg transition-colors duration-200;
-  }
-  
-  /* Card Classes */
-  .card-macs {
-    @apply bg-white border border-macs-gray-200 rounded-xl shadow-macs-sm hover:shadow-macs-md transition-shadow duration-200;
-  }
-  
-  .card-macs-elevated {
-    @apply bg-white border border-macs-gray-200 rounded-xl shadow-macs-lg hover:shadow-macs-xl transition-shadow duration-200;
-  }
-  
-  /* Navigation Classes */
-  .nav-tab {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
-  }
-  
-  .nav-tab-active {
-    @apply bg-macs-blue-600 text-white;
-  }
-  
-  .nav-tab-inactive {
-    @apply text-macs-gray-600 hover:text-macs-blue-600 hover:bg-macs-blue-50;
-  }
-  
-  /* Animation Classes */
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-in-out;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.8s ease-out;
-  }
-  
-  .animate-slide-down {
-    animation: slideDown 0.8s ease-out;
-  }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.4s ease-out;
-  }
-  
-  .animate-bounce-in {
-    animation: bounceIn 0.6s ease-out;
-  }
-  
-  /* Keyframes */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes slideUp {
-    from { 
-      transform: translateY(20px); 
-      opacity: 0; 
-    }
-    to { 
-      transform: translateY(0); 
-      opacity: 1; 
-    }
-  }
-  
-  @keyframes slideDown {
-    from { 
-      transform: translateY(-20px); 
-      opacity: 0; 
-    }
-    to { 
-      transform: translateY(0); 
-      opacity: 1; 
-    }
-  }
-  
-  @keyframes scaleIn {
-    from { 
-      transform: scale(0.95); 
-      opacity: 0; 
-    }
-    to { 
-      transform: scale(1); 
-      opacity: 1; 
-    }
-  }
-  
-  @keyframes bounceIn {
-    0% { 
-      transform: scale(0.3); 
-      opacity: 0; 
-    }
-    50% { 
-      transform: scale(1.05); 
-    }
-    70% { 
-      transform: scale(0.9); 
-    }
-    100% { 
-      transform: scale(1); 
-      opacity: 1; 
-    }
-  }
-  
-  /* Utility Classes */
-  .gradient-macs {
-    background: linear-gradient(135deg, #1e40af 0%, #f59e0b 50%, #f97316 100%);
-  }
-  
-  .gradient-macs-subtle {
-    background: linear-gradient(135deg, #f9fafb 0%, #eff6ff 50%, #fffbeb 100%);
-  }
-  
-  .text-gradient-macs {
-    background: linear-gradient(135deg, #1e40af 0%, #f59e0b 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  /* Scrollbar Styling */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: #d1d5db #f9fafb;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: #f9fafb;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 3px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }
 

@@ -8,6 +8,10 @@ import PublicArtistProfile from './components/PublicArtistProfile';
 import AuthModal from './components/AuthModal';
 import Sidebar from './components/Sidebar';
 import ClientBookingHistory from './components/ClientBookingHistory';
+import BookingTracker from './components/BookingTracker';
+import Campaigns from './pages/Campaigns';
+import CampaignDetail from './pages/CampaignDetail';
+import { ToastManager } from './components/ToastNotification';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -163,9 +167,12 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/campaigns/:id" element={<CampaignDetail />} />
             <Route path="/profile" element={<ArtistDashboard />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/track-booking" element={<BookingTracker />} />
             <Route path="/artists/:username" element={<PublicArtistProfile />} />
             
             {/* Protected Routes */}
@@ -198,6 +205,8 @@ function AppContent() {
         onClose={closeAuthModal}
         onSwitchMode={(mode) => setAuthModal({ isOpen: true, mode })}
       />
+      
+      <ToastManager />
     </div>
   );
 }

@@ -12,7 +12,9 @@ const Navbar = ({ onAuthClick }) => {
     { name: 'Feed', path: '/', icon: '📊' },
     { name: 'Marketplace', path: '/marketplace', icon: '🛒' },
     { name: 'Discover', path: '/discover', icon: '🔍' },
+    { name: 'Crowdfunding', path: '/campaigns', icon: '💰' },
     { name: 'My Bookings', path: '/my-bookings', icon: '📅' },
+    { name: 'Track Booking', path: '/track-booking', icon: '🔍' },
     { name: 'Profile', path: '/profile', icon: '👤' },
     { name: 'Wallet', path: '/wallet', icon: '💰' },
   ];

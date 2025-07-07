@@ -1,6 +1,6 @@
 // Booking Service for MACS Platform
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://5001-ipwxlbr9tv9s4h2xkej3y-d6ef6919.manusvm.computer' 
+  ? 'https://5001-ia65z5fdlm3fg7fvw44p4-d6ef6919.manusvm.computer' 
   : 'http://localhost:5001';
 
 class BookingService {
@@ -87,6 +87,23 @@ class BookingService {
     }
   }
 
+  // Get all bookings for a specific user email
+  async getUserBookings(userEmail) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/bookings/user/${encodeURIComponent(userEmail)}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+      throw error;
+    }
+  }
+
   async getAvailability(artistId, startDate = null, endDate = null) {
     try {
       const queryParams = new URLSearchParams();
@@ -148,6 +165,82 @@ class BookingService {
     }
   }
 
+  // Confirm or decline booking
+  async confirmBooking(bookingId, action) {
+    try {
+      const status = action === 'accept' ? 'confirmed' : 'declined';
+      
+      const response = await fetch(`${API_BASE_URL}/api/v1/bookings/${bookingId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error confirming booking:', error);
+      throw error;
+    }
+  }
+
+  // Check availability for specific time slot
+  async checkTimeSlotAvailability(artistId, date, time) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/bookings/check-availability`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          artistId,
+          date,
+          time
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error checking time slot availability:', error);
+      // Return available as fallback to not block bookings
+      return { available: true };
+    }
+  }
+
+  // Update artist availability
+  async updateAvailability(artistId, availability) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/availability/${artistId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ availability }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating availability:', error);
+      throw error;
+    }
+  }
+
   // Check availability for specific time slot
   async checkAvailability(artistId, dateTime) {
     try {
@@ -168,6 +261,34 @@ class BookingService {
     } catch (error) {
       console.error('Error checking availability:', error);
       throw error;
+    }
+  }
+
+  // Check if specific time slot is available
+  async checkTimeSlotAvailability(artistId, date, time) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/bookings/check-timeslot`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          artistId, 
+          date, 
+          time 
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error checking time slot availability:', error);
+      // Return available as fallback to prevent blocking
+      return { available: true };
     }
   }
 
