@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { DollarSign, Calendar, Users, Target, Heart, Share2, Filter, Search } from 'lucide-react';
+import CryptoContributionModal from '../components/CryptoContributionModal';
 
 const Campaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [contributionModal, setContributionModal] = useState({ isOpen: false, campaign: null });
 
   useEffect(() => {
     fetchCampaigns();
@@ -14,7 +16,7 @@ const Campaigns = () => {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/v1/campaigns');
+      const response = await fetch('https://xlhyimcjvxqq.manus.space/api/v1/campaigns');
       const data = await response.json();
       setCampaigns(data.campaigns || []);
     } catch (error) {
@@ -22,6 +24,25 @@ const Campaigns = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle opening contribution modal
+  const handleContributeClick = (campaign) => {
+    setContributionModal({ isOpen: true, campaign });
+  };
+
+  // Handle closing contribution modal
+  const handleCloseContributionModal = () => {
+    setContributionModal({ isOpen: false, campaign: null });
+  };
+
+  // Handle successful contribution
+  const handleContributionSuccess = (updatedCampaign) => {
+    setCampaigns(prevCampaigns =>
+      prevCampaigns.map(campaign =>
+        campaign.id === updatedCampaign.id ? updatedCampaign : campaign
+      )
+    );
   };
 
   const filteredCampaigns = campaigns.filter(campaign => {
@@ -235,12 +256,18 @@ const Campaigns = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => handleContributeClick(campaign)}
+                      className="btn-primary flex-1 flex items-center justify-center"
+                    >
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      💸 Contribute
+                    </button>
                     <Link
                       to={`/campaigns/${campaign.id}`}
-                      className="btn-primary flex-1 text-center"
+                      className="btn-secondary p-2 flex items-center justify-center"
                     >
-                      <Heart className="w-4 h-4 mr-2" />
-                      Support
+                      <Heart className="w-4 h-4" />
                     </Link>
                     <button className="btn-secondary p-2">
                       <Share2 className="w-4 h-4" />
@@ -252,6 +279,14 @@ const Campaigns = () => {
           </div>
         )}
       </div>
+
+      {/* Contribution Modal */}
+      <CryptoContributionModal
+        isOpen={contributionModal.isOpen}
+        onClose={handleCloseContributionModal}
+        campaign={contributionModal.campaign}
+        onContributionSuccess={handleContributionSuccess}
+      />
     </div>
   );
 };

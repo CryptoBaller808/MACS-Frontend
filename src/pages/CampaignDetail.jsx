@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Calendar, Users, Target, Heart, Share2, Clock, CheckCircle } from 'lucide-react';
-import ContributionModal from '../components/ContributionModal';
+import CryptoContributionModal from '../components/CryptoContributionModal';
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -15,7 +15,7 @@ const CampaignDetail = () => {
 
   const fetchCampaign = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/v1/campaigns/${id}`);
+      const response = await fetch(`https://xlhyimcjvxqq.manus.space/api/v1/campaigns/${id}`);
       const data = await response.json();
       setCampaign(data.campaign);
     } catch (error) {
@@ -198,8 +198,8 @@ const CampaignDetail = () => {
                   onClick={handleSupportClick}
                   className="btn-primary w-full"
                 >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Support this project
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  💸 Contribute
                 </button>
                 
                 <button className="btn-secondary w-full">
@@ -236,11 +236,11 @@ const CampaignDetail = () => {
       </div>
 
       {/* Contribution Modal */}
-      <ContributionModal
+      <CryptoContributionModal
         isOpen={isContributionModalOpen}
         onClose={() => setIsContributionModalOpen(false)}
         campaign={campaign}
-        onSuccess={handleContributionSuccess}
+        onContributionSuccess={handleContributionSuccess}
       />
     </div>
   );
